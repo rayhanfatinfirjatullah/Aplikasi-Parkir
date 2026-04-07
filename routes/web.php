@@ -52,5 +52,6 @@ Route::middleware('auth')->group(function () {
     // Owner routes
     Route::middleware('role:owner')->prefix('owner')->group(function () {
         Route::get('/laporan', App\Livewire\Owner\LaporanTransaksi::class)->name('owner.laporan');
+        Route::get('/laporan/cetak', [App\Http\Controllers\Owner\CetakLaporanController::class, 'cetak'])->name('owner.laporan.cetak');
     });
 });
