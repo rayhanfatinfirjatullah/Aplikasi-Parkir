@@ -165,7 +165,8 @@
                         <h2 class="text-xl font-bold text-slate-800 dark:text-white">@yield('page-title', 'Dashboard')</h2>
                         <p class="text-sm text-slate-500 dark:text-slate-400">@yield('page-subtitle', 'Selamat datang di Aplikasi Parkir')</p>
                     </div>
-                    <div class="flex items-center gap-4">
+                    <div class="flex flex-col items-end leading-tight">
+                        <span id="live-clock" class="text-lg font-bold text-slate-500 dark:text-slate-400 tabular-nums"></span>
                         <span class="text-sm text-slate-500 dark:text-slate-400">{{ now()->translatedFormat('l, d F Y') }}</span>
                     </div>
                 </div>
@@ -197,5 +198,27 @@
         </main>
     </div>
     @livewireScripts
+
+    <script>
+    function updateClock() {
+        const now = new Date();
+        
+        // Ambil jam dan menit, pastikan selalu 2 digit dengan padStart
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        // Gabungkan
+        const timeString = `${hours}:${minutes}`;
+        
+        // Masukkan ke elemen dengan ID 'live-clock'
+        document.getElementById('live-clock').textContent = timeString;
+    }
+
+    // Jalankan fungsi setiap 1 detik agar waktu selalu akurat
+    setInterval(updateClock, 1000);
+
+    // Panggil langsung agar saat page load tidak kosong
+    updateClock();
+</script>
 </body>
 </html>
