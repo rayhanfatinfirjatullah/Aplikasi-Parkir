@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:petugas')->prefix('petugas')->group(function () {
         Route::get('/transaksi-masuk', App\Livewire\Petugas\TransaksiMasuk::class)->name('petugas.transaksi-masuk');
         Route::get('/transaksi-keluar', App\Livewire\Petugas\TransaksiKeluar::class)->name('petugas.transaksi-keluar');
+        Route::get('/cetak-karcis/{id}', App\Livewire\Petugas\CetakKarcis::class)->name('petugas.cetak-karcis');
         Route::get('/cetak-struk/{id}', App\Livewire\Petugas\CetakStruk::class)->name('petugas.cetak-struk');
     });
 

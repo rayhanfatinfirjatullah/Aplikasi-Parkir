@@ -17,11 +17,8 @@ class TransaksiMasuk extends Component
     public string $jenis_kendaraan = 'motor';
     public string $id_area = '';
 
-    public bool $showSuccess = false;
-    public ?array $lastTransaction = null;
-
     protected array $rules = [
-        'plat_nomor' => 'required|string|max:11|regex:/^[A-Z]{1,2}\s[1-9][0-9]{0,3}(\s[A-Z]{1,3})?$/i',
+        'plat_nomor' => 'required|string|max:20',
         'warna' => 'required|string|max:50',
         'pemilik' => 'required|string|max:255',
         'jenis_kendaraan' => 'required|in:motor,mobil,lainnya',
@@ -91,23 +88,8 @@ class TransaksiMasuk extends Component
             'waktu_aktivitas' => now(),
         ]);
 
-        $this->lastTransaction = [
-            'id_parkir' => $transaksi->id_parkir,
-            'plat_nomor' => $kendaraan->plat_nomor,
-            'jenis_kendaraan' => ucfirst($tarif->jenis_kendaraan),
-            'area' => $area->nama_area,
-            'waktu_masuk' => $transaksi->waktu_masuk->format('d/m/Y H:i'),
-        ];
-
-        $this->showSuccess = true;
-        $this->reset(['plat_nomor', 'warna', 'pemilik', 'jenis_kendaraan', 'id_area']);
-        $this->jenis_kendaraan = 'motor';
-    }
-
-    public function resetForm()
-    {
-        $this->showSuccess = false;
-        $this->lastTransaction = null;
+        // Redirect to print entry ticket
+        return redirect()->route('petugas.cetak-karcis', $transaksi->id_parkir);
     }
 
     public function render()

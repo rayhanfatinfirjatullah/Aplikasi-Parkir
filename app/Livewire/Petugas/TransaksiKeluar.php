@@ -51,7 +51,7 @@ class TransaksiKeluar extends Component
     {
         if (!$this->checkoutData) return;
 
-        $transaksi = Transaksi::with('areaParkir')->findOrFail($this->checkoutData['id_parkir']);
+        $transaksi = Transaksi::with(['areaParkir', 'kendaraan', 'tarif'])->findOrFail($this->checkoutData['id_parkir']);
 
         $waktuKeluar = now();
         $waktuMasuk = Carbon::parse($transaksi->waktu_masuk);
@@ -85,8 +85,10 @@ class TransaksiKeluar extends Component
         $transaksis = Transaksi::with(['kendaraan', 'tarif', 'areaParkir', 'user'])
             ->where('status', 'masuk')
             ->when($this->search, function ($q) {
-                $q->whereHas('kendaraan', function ($q2) {
-                    $q2->where('plat_nomor', 'like', "%{$this->search}%");
+                $q->where(function ($q2) {
+                    $q2->whereHas('kendaraan', function ($q3) {
+                        $q3->where('plat_nomor', 'like', "%{$this->search}%");
+                    })->orWhere('id_parkir', 'like', "%{$this->search}%");
                 });
             })
             ->orderBy('waktu_masuk', 'desc')

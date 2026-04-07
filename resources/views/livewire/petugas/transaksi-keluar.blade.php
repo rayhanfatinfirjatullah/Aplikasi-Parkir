@@ -7,7 +7,7 @@
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
-            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari berdasarkan plat nomor..."
+            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari plat nomor atau no. karcis..."
                    class="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-80 text-slate-800 dark:text-white">
         </div>
     </div>
@@ -21,6 +21,7 @@
             <table class="w-full text-sm">
                 <thead class="bg-slate-50 dark:bg-slate-700/50">
                     <tr>
+                        <th class="px-6 py-4 text-left font-semibold text-slate-600 dark:text-slate-300">No. Karcis</th>
                         <th class="px-6 py-4 text-left font-semibold text-slate-600 dark:text-slate-300">Plat Nomor</th>
                         <th class="px-6 py-4 text-left font-semibold text-slate-600 dark:text-slate-300">Jenis</th>
                         <th class="px-6 py-4 text-left font-semibold text-slate-600 dark:text-slate-300">Area</th>
@@ -31,7 +32,8 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                     @forelse($transaksis as $t)
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    <tr wire:key="trx-{{ $t->id_parkir }}" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="px-6 py-4 text-slate-600 dark:text-slate-300 font-mono">#{{ str_pad($t->id_parkir, 6, '0', STR_PAD_LEFT) }}</td>
                         <td class="px-6 py-4 font-bold text-slate-800 dark:text-white tracking-wider">{{ $t->kendaraan->plat_nomor }}</td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ ucfirst($t->tarif->jenis_kendaraan) }}</td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $t->areaParkir->nama_area }}</td>
@@ -54,7 +56,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">Tidak ada kendaraan yang sedang terparkir</td>
+                        <td colspan="7" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">Tidak ada kendaraan yang sedang terparkir</td>
                     </tr>
                     @endforelse
                 </tbody>
