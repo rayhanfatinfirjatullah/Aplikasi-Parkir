@@ -69,6 +69,16 @@
                     <span class="text-slate-500">Durasi</span>
                     <span class="text-slate-800">{{ $transaksi->durasi_jam ?? 0 }} jam</span>
                 </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Biaya Parkir</span>
+                    <span class="text-slate-800">Rp {{ number_format(($transaksi->durasi_jam ?? 0) * $transaksi->tarif->tarif_per_jam, 0, ',', '.') }}</span>
+                </div>
+                @if($transaksi->denda > 0)
+                <div class="flex justify-between">
+                    <span class="text-red-500 font-medium">Denda Karcis Hilang</span>
+                    <span class="text-red-600 font-semibold">Rp {{ number_format($transaksi->denda, 0, ',', '.') }}</span>
+                </div>
+                @endif
                 <div class="flex justify-between items-center pt-2 mt-2 border-t border-slate-200">
                     <span class="text-lg font-bold text-slate-800">TOTAL BAYAR</span>
                     <span class="text-lg font-bold text-emerald-600">Rp {{ number_format($transaksi->biaya_total ?? 0, 0, ',', '.') }}</span>

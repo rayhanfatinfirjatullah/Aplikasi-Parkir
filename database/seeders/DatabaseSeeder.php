@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Tarif;
 use App\Models\AreaParkir;
+use App\Models\Pengaturan;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -70,6 +71,12 @@ class DatabaseSeeder extends Seeder
             'nama_area' => 'Area C',
             'kapasitas' => 20,
             'terisi' => 0,
+        ]);
+
+        // Seed Pengaturan
+        Pengaturan::create([
+            'nama_pengaturan' => 'denda_karcis_hilang',
+            'nilai_pengaturan' => '20000',
         ]);
     }
 }

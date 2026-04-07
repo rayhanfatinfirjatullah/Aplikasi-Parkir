@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Tarif;
+use App\Models\Pengaturan;
 use App\Models\LogAktivitas as LogModel;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -18,6 +19,14 @@ class TarifManagement extends Component
 
     public string $jenis_kendaraan = 'motor';
     public string $tarif_per_jam = '';
+
+    // Pengaturan denda
+    public string $denda_karcis_hilang = '';
+
+    public function mount()
+    {
+        $this->denda_karcis_hilang = Pengaturan::getValue('denda_karcis_hilang', '20000');
+    }
 
     protected array $rules = [
         'jenis_kendaraan' => 'required|in:motor,mobil,lainnya',
@@ -66,6 +75,23 @@ class TarifManagement extends Component
 
         $this->showModal = false;
         session()->flash('success', 'Tarif berhasil disimpan!');
+    }
+
+    public function updateDenda()
+    {
+        $this->validate([
+            'denda_karcis_hilang' => 'required|numeric|min:0',
+        ]);
+
+        Pengaturan::setValue('denda_karcis_hilang', $this->denda_karcis_hilang);
+
+        LogModel::create([
+            'id_user' => auth()->user()->id_user,
+            'aktivitas' => "Mengubah denda karcis hilang menjadi Rp " . number_format((int) $this->denda_karcis_hilang, 0, ',', '.'),
+            'waktu_aktivitas' => now(),
+        ]);
+
+        session()->flash('success', 'Denda karcis hilang berhasil diperbarui!');
     }
 
     public function delete($id)

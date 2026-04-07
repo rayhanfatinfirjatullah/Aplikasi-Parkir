@@ -100,6 +100,30 @@
                     <span class="text-slate-500">Tarif/Jam</span>
                     <span class="text-slate-800 dark:text-white">Rp {{ number_format($checkoutData['tarif_per_jam'], 0, ',', '.') }}</span>
                 </div>
+                <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700">
+                    <span class="text-slate-500">Biaya Parkir</span>
+                    <span class="text-slate-800 dark:text-white">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
+                </div>
+
+                <!-- Denda Karcis Hilang -->
+                <div class="py-3 border-b border-slate-100 dark:border-slate-700">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input type="checkbox" wire:model.live="isKarcisHilang"
+                               class="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-red-600 focus:ring-red-500 dark:bg-slate-700">
+                        <div>
+                            <span class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">Karcis Hilang?</span>
+                            <span class="text-xs text-slate-400 ml-1">(Denda Rp {{ number_format($nilaiDenda, 0, ',', '.') }})</span>
+                        </div>
+                    </label>
+                </div>
+
+                @if($isKarcisHilang)
+                <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700 animate-pulse">
+                    <span class="text-red-500 font-medium">Denda Karcis Hilang</span>
+                    <span class="text-red-600 font-semibold">Rp {{ number_format($checkoutData['denda'], 0, ',', '.') }}</span>
+                </div>
+                @endif
+
                 <div class="flex justify-between py-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl px-4 -mx-1">
                     <span class="font-bold text-emerald-800 dark:text-emerald-300 text-lg">Total Biaya</span>
                     <span class="font-bold text-emerald-800 dark:text-emerald-300 text-lg">Rp {{ number_format($checkoutData['biaya_total'], 0, ',', '.') }}</span>
