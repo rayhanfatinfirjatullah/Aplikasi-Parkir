@@ -28,19 +28,48 @@
 
                 <form wire:submit="checkin">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="md:col-span-2">
+                        <div class="md:col-span-2" x-data="{
+                            formatPlat(el) {
+                                let val = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                                let res = '';
+                                let i = 0;
+                                
+                                let p1 = '';
+                                while (i < val.length && p1.length < 2 && /[A-Z]/.test(val[i])) {
+                                    p1 += val[i++];
+                                }
+                                res += p1;
+                                
+                                let p2 = '';
+                                while (i < val.length && p2.length < 4 && /[0-9]/.test(val[i])) {
+                                    p2 += val[i++];
+                                }
+                                if (p2.length > 0) res += (res.length > 0 ? ' ' : '') + p2;
+                                
+                                let p3 = '';
+                                while (i < val.length && p3.length < 3 && /[A-Z]/.test(val[i])) {
+                                    p3 += val[i++];
+                                }
+                                if (p3.length > 0) res += (res.length > 0 ? ' ' : '') + p3;
+                                
+                                el.value = res;
+                            }
+                        }">
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Plat Nomor</label>
                             <input wire:model.blur="plat_nomor" type="text" placeholder="Contoh: B 1234 ABC"
+                                   maxlength="11"
+                                   x-on:input="formatPlat($el)"
+                                   oninput="this.value = this.value.toUpperCase()"
                                    class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 text-lg font-bold tracking-wider uppercase">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Warna Kendaraan</label>
-                            <input wire:model="warna" type="text" placeholder="Contoh: Hitam"
+                            <input wire:model="warna" type="text" placeholder="Contoh: Hitam" x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
                                    class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Pemilik</label>
-                            <input wire:model="pemilik" type="text" placeholder="Nama pemilik kendaraan"
+                            <input wire:model="pemilik" type="text" placeholder="Nama pemilik kendaraan" x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
                                    class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
