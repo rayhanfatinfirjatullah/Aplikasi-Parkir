@@ -19,6 +19,7 @@ class KendaraanManagement extends Component
     public string $plat_nomor = '';
     public string $warna = '';
     public string $pemilik = '';
+    public bool $is_vvip = false;
 
     protected function rules()
     {
@@ -30,6 +31,16 @@ class KendaraanManagement extends Component
         ];
     }
 
+    protected array $messages = [
+        'plat_nomor.required' => 'Plat nomor wajib diisi',
+        'plat_nomor.max' => 'Plat nomor maksimal 20 karakter',
+        'plat_nomor.unique' => 'Plat nomor sudah terdaftar',
+        'warna.required' => 'Warna wajib diisi',
+        'warna.max' => 'Warna maksimal 50 karakter',
+        'pemilik.required' => 'Pemilik wajib diisi',
+        'pemilik.max' => 'Pemilik maksimal 255 karakter',
+    ];
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -37,7 +48,7 @@ class KendaraanManagement extends Component
 
     public function openCreate()
     {
-        $this->reset(['plat_nomor', 'warna', 'pemilik', 'editId', 'isEdit']);
+        $this->reset(['plat_nomor', 'warna', 'pemilik', 'is_vvip', 'editId', 'isEdit']);
         $this->showModal = true;
     }
 
@@ -49,7 +60,15 @@ class KendaraanManagement extends Component
         $this->plat_nomor = $kendaraan->plat_nomor;
         $this->warna = $kendaraan->warna;
         $this->pemilik = $kendaraan->pemilik;
+        $this->is_vvip = $kendaraan->is_vvip;
         $this->showModal = true;
+    }
+
+    public function closeModal()
+    {
+        $this->reset(['plat_nomor', 'warna', 'pemilik', 'is_vvip', 'editId', 'isEdit']);
+        $this->resetValidation();
+        $this->showModal = false;
     }
 
     public function save()
@@ -60,6 +79,7 @@ class KendaraanManagement extends Component
             'plat_nomor' => strtoupper($this->plat_nomor),
             'warna' => $this->warna,
             'pemilik' => $this->pemilik,
+            'is_vvip' => $this->is_vvip,
         ];
 
         if ($this->isEdit) {

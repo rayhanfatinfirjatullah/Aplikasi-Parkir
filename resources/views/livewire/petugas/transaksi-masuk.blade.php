@@ -13,19 +13,6 @@
                     Form Check-in Kendaraan
                 </h3>
 
-                @if ($errors->any())
-                <div class="mb-4 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <div>
-                        @foreach ($errors->all() as $error)
-                            <p>{{ $error }}</p>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
-
                 <form wire:submit="checkin">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2" x-data="{
@@ -56,35 +43,52 @@
                             }
                         }">
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Plat Nomor</label>
-                            <input wire:model.blur="plat_nomor" type="text" placeholder="Contoh: B 1234 ABC"
+                            <input wire:model.blur="plat_nomor" type="text" list="registered-vehicles" placeholder="Contoh: B 1234 ABC"
                                    maxlength="11"
                                    x-on:input="formatPlat($el)"
                                    oninput="this.value = this.value.toUpperCase()"
-                                   class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 text-lg font-bold tracking-wider uppercase">
+                                   class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 text-lg font-bold tracking-wider uppercase @error('plat_nomor') border-red-500 @enderror">
+                            <datalist id="registered-vehicles">
+                                @foreach($registeredVehicles as $kendaraan)
+                                    <option value="{{ $kendaraan->plat_nomor }}">{{ $kendaraan->warna }} - {{ $kendaraan->pemilik }}</option>
+                                @endforeach
+                            </datalist>
+                            @error('plat_nomor')
+                                <div class="text-xs text-red-500 mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Warna Kendaraan</label>
                             <input wire:model="warna" type="text" placeholder="Contoh: Hitam" x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
-                                   class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('warna') border-red-500 @enderror">
+                            @error('warna')
+                                <div class="text-xs text-red-500 mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Pemilik</label>
                             <input wire:model="pemilik" type="text" placeholder="Nama pemilik kendaraan" x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
-                                   class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('pemilik') border-red-500 @enderror">
+                            @error('pemilik')
+                                <div class="text-xs text-red-500 mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Jenis Kendaraan</label>
                             <select wire:model="jenis_kendaraan"
-                                    class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+                                    class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('jenis_kendaraan') border-red-500 @enderror">
                                 @foreach($tarifs as $tarif)
                                 <option value="{{ $tarif->jenis_kendaraan }}">{{ ucfirst($tarif->jenis_kendaraan) }} - Rp {{ number_format($tarif->tarif_per_jam, 0, ',', '.') }}/jam</option>
                                 @endforeach
                             </select>
+                            @error('jenis_kendaraan')
+                                <div class="text-xs text-red-500 mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Area Parkir</label>
                             <select wire:model="id_area"
-                                    class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+                                    class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('id_area') border-red-500 @enderror">
                                 <option value="">Pilih Area</option>
                                 @foreach($areas as $area)
                                 <option value="{{ $area->id_area }}" {{ $area->isFull() ? 'disabled' : '' }}>
@@ -92,6 +96,9 @@
                                 </option>
                                 @endforeach
                             </select>
+                            @error('id_area')
+                                <div class="text-xs text-red-500 mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="mt-6">

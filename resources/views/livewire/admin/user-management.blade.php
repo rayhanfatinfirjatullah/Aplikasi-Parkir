@@ -95,37 +95,39 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Lengkap</label>
-                        <input wire:model="nama_lengkap" type="text" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('nama_lengkap') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        <input wire:model="nama_lengkap" type="text" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('nama_lengkap') border-red-500 @enderror">
+                        @error('nama_lengkap') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Username</label>
-                        <input wire:model="username" type="text" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('username') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        <input wire:model="username" type="text" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('username') border-red-500 @enderror">
+                        @error('username') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password {{ $isEdit ? '(kosongkan jika tidak diubah)' : '' }}</label>
-                        <input wire:model="password" type="password" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('password') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        <input wire:model="password" type="password" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('password') border-red-500 @enderror">
+                        @error('password') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Role</label>
-                        <select wire:model="role" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select wire:model="role" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('role') border-red-500 @enderror">
                             <option value="admin">Admin</option>
                             <option value="petugas">Petugas</option>
                             <option value="owner">Owner</option>
                         </select>
+                        @error('role') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Status</label>
-                        <select wire:model="status_aktif" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select wire:model="status_aktif" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('status_aktif') border-red-500 @enderror">
                             <option value="1">Aktif</option>
                             <option value="0">Nonaktif</option>
                         </select>
+                        @error('status_aktif') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" wire:click="$set('showModal', false)"
+                    <button type="button" wire:click="closeModal"
                             class="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                         Batal
                     </button>

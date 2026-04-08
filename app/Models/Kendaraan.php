@@ -14,7 +14,15 @@ class Kendaraan extends Model
         'plat_nomor',
         'warna',
         'pemilik',
+        'is_vvip',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_vvip' => 'boolean',
+        ];
+    }
 
     public function transaksi(): HasMany
     {

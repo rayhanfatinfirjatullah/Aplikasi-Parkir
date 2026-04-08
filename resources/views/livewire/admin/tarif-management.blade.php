@@ -17,8 +17,9 @@
                 <div class="relative">
                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">Rp</span>
                     <input wire:model="denda_karcis_hilang" type="number" min="0" step="500" required
-                           class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white font-semibold focus:ring-2 focus:ring-amber-500">
+                           class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-800 dark:text-white font-semibold focus:ring-2 focus:ring-amber-500 @error('denda_karcis_hilang') border-red-500 @enderror">
                 </div>
+                @error('denda_karcis_hilang') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
             </div>
             <button type="submit"
                     class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300">
@@ -112,21 +113,21 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Jenis Kendaraan</label>
-                        <select wire:model="jenis_kendaraan" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+                        <select wire:model="jenis_kendaraan" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('jenis_kendaraan') border-red-500 @enderror">
                             <option value="motor">Motor</option>
                             <option value="mobil">Mobil</option>
                             <option value="lainnya">Lainnya</option>
                         </select>
-                        @error('jenis_kendaraan') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        @error('jenis_kendaraan') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tarif per Jam (Rp)</label>
-                        <input wire:model="tarif_per_jam" type="number" step="500" min="0" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        @error('tarif_per_jam') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        <input wire:model="tarif_per_jam" type="number" step="500" min="0" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('tarif_per_jam') border-red-500 @enderror">
+                        @error('tarif_per_jam') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" wire:click="$set('showModal', false)"
+                    <button type="button" wire:click="closeModal"
                             class="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-xl hover:bg-slate-200 transition-colors">Batal</button>
                     <button type="submit"
                             class="px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-300">Simpan</button>

@@ -25,6 +25,19 @@ class TransaksiMasuk extends Component
         'id_area' => 'required|exists:tb_area_parkir,id_area',
     ];
 
+    protected array $messages = [
+        'plat_nomor.required' => 'Plat nomor wajib diisi',
+        'plat_nomor.max' => 'Plat nomor maksimal 20 karakter',
+        'warna.required' => 'Warna kendaraan wajib diisi',
+        'warna.max' => 'Warna kendaraan maksimal 50 karakter',
+        'pemilik.required' => 'Nama pemilik wajib diisi',
+        'pemilik.max' => 'Nama pemilik maksimal 255 karakter',
+        'jenis_kendaraan.required' => 'Jenis kendaraan wajib dipilih',
+        'jenis_kendaraan.in' => 'Jenis kendaraan tidak valid',
+        'id_area.required' => 'Area parkir wajib dipilih',
+        'id_area.exists' => 'Area parkir tidak ditemukan',
+    ];
+
     public function updatedPlatNomor()
     {
         $this->plat_nomor = strtoupper($this->plat_nomor);
@@ -96,8 +109,11 @@ class TransaksiMasuk extends Component
     {
         $areas = AreaParkir::all();
         $tarifs = Tarif::all();
+        $registeredVehicles = Kendaraan::whereDoesntHave('transaksi', function ($query) {
+            $query->where('status', 'masuk');
+        })->get();
 
-        return view('livewire.petugas.transaksi-masuk', compact('areas', 'tarifs'))
+        return view('livewire.petugas.transaksi-masuk', compact('areas', 'tarifs', 'registeredVehicles'))
             ->layout('layouts.app');
     }
 }

@@ -36,12 +36,14 @@ class TransaksiKeluar extends Component
         $waktuKeluar = now();
         $waktuMasuk = Carbon::parse($transaksi->waktu_masuk);
         $durasiJam = max(1, (int) ceil($waktuMasuk->diffInMinutes($waktuKeluar) / 60));
-        $biayaParkir = $durasiJam * $transaksi->tarif->tarif_per_jam;
+        $isVvip = $transaksi->kendaraan->is_vvip;
+        $biayaParkir = $isVvip ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
 
         $this->checkoutData = [
             'id_parkir' => $transaksi->id_parkir,
             'plat_nomor' => $transaksi->kendaraan->plat_nomor,
             'warna' => $transaksi->kendaraan->warna,
+            'is_vvip' => $isVvip,
             'pemilik' => $transaksi->kendaraan->pemilik,
             'jenis_kendaraan' => ucfirst($transaksi->tarif->jenis_kendaraan),
             'area' => $transaksi->areaParkir->nama_area,
@@ -78,7 +80,8 @@ class TransaksiKeluar extends Component
         $waktuKeluar = now();
         $waktuMasuk = Carbon::parse($transaksi->waktu_masuk);
         $durasiJam = max(1, (int) ceil($waktuMasuk->diffInMinutes($waktuKeluar) / 60));
-        $biayaParkir = $durasiJam * $transaksi->tarif->tarif_per_jam;
+        $isVvip = $transaksi->kendaraan->is_vvip;
+        $biayaParkir = $isVvip ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
         $denda = $this->isKarcisHilang ? $this->nilaiDenda : 0;
         $biayaTotal = $biayaParkir + $denda;
 

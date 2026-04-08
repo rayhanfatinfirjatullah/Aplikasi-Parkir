@@ -24,6 +24,14 @@ class AreaParkirManagement extends Component
         'kapasitas' => 'required|integer|min:1',
     ];
 
+    protected array $messages = [
+        'nama_area.required' => 'Nama area wajib diisi',
+        'nama_area.max' => 'Nama area maksimal 255 karakter',
+        'kapasitas.required' => 'Kapasitas wajib diisi',
+        'kapasitas.integer' => 'Kapasitas harus berupa angka',
+        'kapasitas.min' => 'Kapasitas minimal 1',
+    ];
+
     public function openCreate()
     {
         $this->reset(['nama_area', 'kapasitas', 'editId', 'isEdit']);
@@ -38,6 +46,13 @@ class AreaParkirManagement extends Component
         $this->nama_area = $area->nama_area;
         $this->kapasitas = $area->kapasitas;
         $this->showModal = true;
+    }
+
+    public function closeModal()
+    {
+        $this->reset(['nama_area', 'kapasitas', 'editId', 'isEdit']);
+        $this->resetValidation();
+        $this->showModal = false;
     }
 
     public function save()

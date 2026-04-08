@@ -74,7 +74,12 @@
             <div class="space-y-3 mb-6">
                 <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700">
                     <span class="text-slate-500">Plat Nomor</span>
-                    <span class="font-bold text-slate-800 dark:text-white">{{ $checkoutData['plat_nomor'] }}</span>
+                    <div class="text-right">
+                        <span class="font-bold text-slate-800 dark:text-white">{{ $checkoutData['plat_nomor'] }}</span>
+                        @if(isset($checkoutData['is_vvip']) && $checkoutData['is_vvip'])
+                        <span class="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">VVIP</span>
+                        @endif
+                    </div>
                 </div>
                 <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700">
                     <span class="text-slate-500">Jenis Kendaraan</span>
@@ -102,7 +107,11 @@
                 </div>
                 <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700">
                     <span class="text-slate-500">Biaya Parkir</span>
-                    <span class="text-slate-800 dark:text-white">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
+                    @if(isset($checkoutData['is_vvip']) && $checkoutData['is_vvip'])
+                        <span class="text-emerald-600 font-bold dark:text-emerald-400">GRATIS (Rp 0)</span>
+                    @else
+                        <span class="text-slate-800 dark:text-white">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
+                    @endif
                 </div>
 
                 <!-- Denda Karcis Hilang -->

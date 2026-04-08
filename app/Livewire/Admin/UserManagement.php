@@ -35,6 +35,20 @@ class UserManagement extends Component
         ];
     }
 
+    protected array $messages = [
+        'nama_lengkap.required' => 'Nama lengkap wajib diisi',
+        'nama_lengkap.max' => 'Nama lengkap maksimal 255 karakter',
+        'username.required' => 'Username wajib diisi',
+        'username.max' => 'Username maksimal 255 karakter',
+        'username.unique' => 'Username sudah terdaftar',
+        'password.required' => 'Password wajib diisi',
+        'password.min' => 'Password minimal 6 karakter',
+        'role.required' => 'Role wajib dipilih',
+        'role.in' => 'Role tidak valid',
+        'status_aktif.required' => 'Status aktif wajib dipilih',
+        'status_aktif.in' => 'Status aktif tidak valid',
+    ];
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -59,6 +73,13 @@ class UserManagement extends Component
         $this->role = $user->role;
         $this->status_aktif = $user->status_aktif;
         $this->showModal = true;
+    }
+
+    public function closeModal()
+    {
+        $this->reset(['nama_lengkap', 'username', 'password', 'role', 'status_aktif', 'editId', 'isEdit']);
+        $this->resetValidation();
+        $this->showModal = false;
     }
 
     public function save()

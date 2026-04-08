@@ -71,17 +71,17 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Area</label>
-                        <input wire:model="nama_area" type="text" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        @error('nama_area') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        <input wire:model="nama_area" type="text" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('nama_area') border-red-500 @enderror">
+                        @error('nama_area') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Kapasitas</label>
-                        <input wire:model="kapasitas" type="number" min="1" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        @error('kapasitas') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        <input wire:model="kapasitas" type="number" min="1" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('kapasitas') border-red-500 @enderror">
+                        @error('kapasitas') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" wire:click="$set('showModal', false)"
+                    <button type="button" wire:click="closeModal"
                             class="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-xl hover:bg-slate-200 transition-colors">Batal</button>
                     <button type="submit"
                             class="px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-300">Simpan</button>

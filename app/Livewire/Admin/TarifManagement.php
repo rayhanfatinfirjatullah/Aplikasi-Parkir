@@ -33,6 +33,14 @@ class TarifManagement extends Component
         'tarif_per_jam' => 'required|numeric|min:0',
     ];
 
+    protected array $messages = [
+        'jenis_kendaraan.required' => 'Jenis kendaraan wajib dipilih',
+        'jenis_kendaraan.in' => 'Jenis kendaraan tidak valid',
+        'tarif_per_jam.required' => 'Tarif per jam wajib diisi',
+        'tarif_per_jam.numeric' => 'Tarif per jam harus berupa angka',
+        'tarif_per_jam.min' => 'Tarif per jam minimal 0',
+    ];
+
     public function openCreate()
     {
         $this->reset(['jenis_kendaraan', 'tarif_per_jam', 'editId', 'isEdit']);
@@ -48,6 +56,13 @@ class TarifManagement extends Component
         $this->jenis_kendaraan = $tarif->jenis_kendaraan;
         $this->tarif_per_jam = $tarif->tarif_per_jam;
         $this->showModal = true;
+    }
+
+    public function closeModal()
+    {
+        $this->reset(['jenis_kendaraan', 'tarif_per_jam', 'editId', 'isEdit']);
+        $this->resetValidation();
+        $this->showModal = false;
     }
 
     public function save()
@@ -81,6 +96,10 @@ class TarifManagement extends Component
     {
         $this->validate([
             'denda_karcis_hilang' => 'required|numeric|min:0',
+        ], [
+            'denda_karcis_hilang.required' => 'Denda karcis hilang wajib diisi',
+            'denda_karcis_hilang.numeric' => 'Denda karcis hilang harus berupa angka',
+            'denda_karcis_hilang.min' => 'Denda karcis hilang minimal 0',
         ]);
 
         Pengaturan::setValue('denda_karcis_hilang', $this->denda_karcis_hilang);

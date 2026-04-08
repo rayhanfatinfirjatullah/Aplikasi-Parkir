@@ -35,7 +35,12 @@
                     @forelse($kendaraans as $i => $k)
                     <tr wire:key="kendaraan-{{ $k->id_kendaraan }}" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $kendaraans->firstItem() + $i }}</td>
-                        <td class="px-6 py-4 font-bold text-slate-800 dark:text-white tracking-wider">{{ $k->plat_nomor }}</td>
+                        <td class="px-6 py-4 font-bold text-slate-800 dark:text-white tracking-wider">
+                            {{ $k->plat_nomor }}
+                            @if($k->is_vvip)
+                            <span class="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">VVIP</span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $k->warna }}</td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $k->pemilik }}</td>
                         <td class="px-6 py-4">
@@ -71,24 +76,57 @@
             <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6">{{ $isEdit ? 'Edit Kendaraan' : 'Tambah Kendaraan' }}</h3>
             <form wire:submit="save">
                 <div class="space-y-4">
-                    <div>
+                    <div x-data="{
+                            formatPlat(el) {
+                                let val = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                                let res = '';
+                                let i = 0;
+                                
+                                let p1 = '';
+                                while (i < val.length && p1.length < 2 && /[A-Z]/.test(val[i])) {
+                                    p1 += val[i++];
+                                }
+                                res += p1;
+                                
+                                let p2 = '';
+                                while (i < val.length && p2.length < 4 && /[0-9]/.test(val[i])) {
+                                    p2 += val[i++];
+                                }
+                                if (p2.length > 0) res += (res.length > 0 ? ' ' : '') + p2;
+                                
+                                let p3 = '';
+                                while (i < val.length && p3.length < 3 && /[A-Z]/.test(val[i])) {
+                                    p3 += val[i++];
+                                }
+                                if (p3.length > 0) res += (res.length > 0 ? ' ' : '') + p3;
+                                
+                                el.value = res;
+                            }
+                        }">
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Plat Nomor</label>
-                        <input wire:model="plat_nomor" type="text" placeholder="Contoh: B 1234 ABC" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 uppercase">
-                        @error('plat_nomor') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        <input wire:model="plat_nomor" type="text" placeholder="Contoh: B 1234 ABC" maxlength="11" x-on:input="formatPlat($el)" oninput="this.value = this.value.toUpperCase()" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 uppercase @error('plat_nomor') border-red-500 @enderror">
+                        @error('plat_nomor') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Warna</label>
-                        <input wire:model="warna" type="text" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        @error('warna') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        <input wire:model="warna" type="text" x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('warna') border-red-500 @enderror">
+                        @error('warna') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Pemilik</label>
-                        <input wire:model="pemilik" type="text" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        @error('pemilik') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        <input wire:model="pemilik" type="text" x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('pemilik') border-red-500 @enderror">
+                        @error('pemilik') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/50 rounded-xl">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input wire:model="is_vvip" type="checkbox" class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 dark:peer-focus:ring-amber-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-amber-500"></div>
+                            <span class="ml-3 text-sm font-medium text-amber-800 dark:text-amber-400">Tandai sebagai VVIP (Parkir Rp 0)</span>
+                        </label>
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" wire:click="$set('showModal', false)"
+                    <button type="button" wire:click="closeModal"
                             class="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-xl hover:bg-slate-200 transition-colors">Batal</button>
                     <button type="submit"
                             class="px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-300">Simpan</button>
