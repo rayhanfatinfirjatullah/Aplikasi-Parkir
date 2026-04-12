@@ -19,7 +19,7 @@ class KendaraanManagement extends Component
     public string $plat_nomor = '';
     public string $warna = '';
     public string $pemilik = '';
-    public bool $is_vvip = false;
+    public string $status_spesial = 'reguler';
 
     protected function rules()
     {
@@ -28,6 +28,7 @@ class KendaraanManagement extends Component
             'plat_nomor' => 'required|string|max:20|' . $uniqueRule,
             'warna' => 'required|string|max:50',
             'pemilik' => 'required|string|max:255',
+            'status_spesial' => 'required|in:reguler,vip,vvip',
         ];
     }
 
@@ -48,7 +49,7 @@ class KendaraanManagement extends Component
 
     public function openCreate()
     {
-        $this->reset(['plat_nomor', 'warna', 'pemilik', 'is_vvip', 'editId', 'isEdit']);
+        $this->reset(['plat_nomor', 'warna', 'pemilik', 'status_spesial', 'editId', 'isEdit']);
         $this->showModal = true;
     }
 
@@ -60,13 +61,13 @@ class KendaraanManagement extends Component
         $this->plat_nomor = $kendaraan->plat_nomor;
         $this->warna = $kendaraan->warna;
         $this->pemilik = $kendaraan->pemilik;
-        $this->is_vvip = $kendaraan->is_vvip;
+        $this->status_spesial = $kendaraan->status_spesial ?? 'reguler';
         $this->showModal = true;
     }
 
     public function closeModal()
     {
-        $this->reset(['plat_nomor', 'warna', 'pemilik', 'is_vvip', 'editId', 'isEdit']);
+        $this->reset(['plat_nomor', 'warna', 'pemilik', 'status_spesial', 'editId', 'isEdit']);
         $this->resetValidation();
         $this->showModal = false;
     }
@@ -79,7 +80,7 @@ class KendaraanManagement extends Component
             'plat_nomor' => strtoupper($this->plat_nomor),
             'warna' => $this->warna,
             'pemilik' => $this->pemilik,
-            'is_vvip' => $this->is_vvip,
+            'status_spesial' => $this->status_spesial,
         ];
 
         if ($this->isEdit) {

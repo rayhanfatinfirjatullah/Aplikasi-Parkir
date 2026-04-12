@@ -76,8 +76,10 @@
                     <span class="text-slate-500">Plat Nomor</span>
                     <div class="text-right">
                         <span class="font-bold text-slate-800 dark:text-white">{{ $checkoutData['plat_nomor'] }}</span>
-                        @if(isset($checkoutData['is_vvip']) && $checkoutData['is_vvip'])
+                        @if(($checkoutData['status_spesial'] ?? 'reguler') === 'vvip')
                         <span class="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">VVIP</span>
+                        @elseif(($checkoutData['status_spesial'] ?? 'reguler') === 'vip')
+                        <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-blue-200 dark:border-blue-800">VIP</span>
                         @endif
                     </div>
                 </div>
@@ -107,7 +109,7 @@
                 </div>
                 <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700">
                     <span class="text-slate-500">Biaya Parkir</span>
-                    @if(isset($checkoutData['is_vvip']) && $checkoutData['is_vvip'])
+                    @if($checkoutData['is_free_parkir'] ?? false)
                         <span class="text-emerald-600 font-bold dark:text-emerald-400">GRATIS (Rp 0)</span>
                     @else
                         <span class="text-slate-800 dark:text-white">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
@@ -115,6 +117,14 @@
                 </div>
 
                 <!-- Denda Karcis Hilang -->
+                @if($checkoutData['is_immune_denda'] ?? false)
+                <div class="py-3 border-b border-slate-100 dark:border-slate-700">
+                    <div class="flex items-center gap-2 p-2 bg-amber-50 dark:bg-amber-900/10 rounded-lg border border-amber-200 dark:border-amber-800/50">
+                        <svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        <span class="text-xs font-medium text-amber-800 dark:text-amber-400">VVIP — Kebal Denda Karcis Hilang</span>
+                    </div>
+                </div>
+                @else
                 <div class="py-3 border-b border-slate-100 dark:border-slate-700">
                     <label class="flex items-center gap-3 cursor-pointer group">
                         <input type="checkbox" wire:model.live="isKarcisHilang"
@@ -131,6 +141,7 @@
                     <span class="text-red-500 font-medium">Denda Karcis Hilang</span>
                     <span class="text-red-600 font-semibold">Rp {{ number_format($checkoutData['denda'], 0, ',', '.') }}</span>
                 </div>
+                @endif
                 @endif
 
                 <div class="flex justify-between py-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl px-4 -mx-1">

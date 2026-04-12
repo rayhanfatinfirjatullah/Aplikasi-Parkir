@@ -37,8 +37,10 @@
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $kendaraans->firstItem() + $i }}</td>
                         <td class="px-6 py-4 font-bold text-slate-800 dark:text-white tracking-wider">
                             {{ $k->plat_nomor }}
-                            @if($k->is_vvip)
+                            @if($k->status_spesial === 'vvip')
                             <span class="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">VVIP</span>
+                            @elseif($k->status_spesial === 'vip')
+                            <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-blue-200 dark:border-blue-800">VIP</span>
                             @endif
                         </td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $k->warna }}</td>
@@ -117,12 +119,32 @@
                         <input wire:model="pemilik" type="text" x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('pemilik') border-red-500 @enderror">
                         @error('pemilik') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
-                    <div class="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/50 rounded-xl">
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input wire:model="is_vvip" type="checkbox" class="sr-only peer">
-                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 dark:peer-focus:ring-amber-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-amber-500"></div>
-                            <span class="ml-3 text-sm font-medium text-amber-800 dark:text-amber-400">Tandai sebagai VVIP (Parkir Rp 0)</span>
-                        </label>
+                    <!-- Status Spesial -->
+                    <div class="p-4 bg-slate-50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-600 rounded-xl">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Status Kendaraan</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <label class="relative cursor-pointer">
+                                <input wire:model="status_spesial" type="radio" value="reguler" class="sr-only peer">
+                                <div class="p-3 text-center rounded-xl border-2 transition-all peer-checked:border-slate-500 peer-checked:bg-slate-100 dark:peer-checked:bg-slate-600 border-slate-200 dark:border-slate-600 hover:border-slate-300">
+                                    <span class="block text-sm font-bold text-slate-700 dark:text-slate-300">Reguler</span>
+                                    <span class="block text-[10px] text-slate-400 mt-1">Tarif Normal</span>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input wire:model="status_spesial" type="radio" value="vip" class="sr-only peer">
+                                <div class="p-3 text-center rounded-xl border-2 transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/30 border-slate-200 dark:border-slate-600 hover:border-blue-300">
+                                    <span class="block text-sm font-bold text-blue-700 dark:text-blue-400">VIP</span>
+                                    <span class="block text-[10px] text-slate-400 mt-1">Gratis, Denda Tetap</span>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input wire:model="status_spesial" type="radio" value="vvip" class="sr-only peer">
+                                <div class="p-3 text-center rounded-xl border-2 transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/20 border-slate-200 dark:border-slate-600 hover:border-amber-300">
+                                    <span class="block text-sm font-bold text-amber-700 dark:text-amber-400">VVIP</span>
+                                    <span class="block text-[10px] text-slate-400 mt-1">Gratis Total 100%</span>
+                                </div>
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6">

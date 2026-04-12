@@ -11,8 +11,10 @@
                 </div>
                 <h1 class="text-xl font-bold text-slate-800">STRUK PEMBAYARAN</h1>
                 <p class="text-sm text-slate-500">Aplikasi Parkir</p>
-                @if($transaksi->kendaraan->is_vvip)
-                <div class="mt-2 inline-block px-3 py-0.5 bg-amber-100 text-amber-800 border border-amber-200 font-bold text-[10px] uppercase tracking-widest rounded-full">Kendaraan VVIP</div>
+                @if($transaksi->kendaraan->status_spesial === 'vvip')
+                <div class="mt-2 inline-block px-3 py-0.5 bg-amber-100 text-amber-800 border border-amber-200 font-bold text-[10px] uppercase tracking-widest rounded-full">Member VVIP</div>
+                @elseif($transaksi->kendaraan->status_spesial === 'vip')
+                <div class="mt-2 inline-block px-3 py-0.5 bg-blue-100 text-blue-800 border border-blue-200 font-bold text-[10px] uppercase tracking-widest rounded-full">Member VIP</div>
                 @endif
             </div>
 
@@ -74,7 +76,7 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Biaya Parkir</span>
-                    @if($transaksi->kendaraan->is_vvip)
+                    @if($transaksi->kendaraan->isFreeParkir())
                         <span class="text-emerald-600 font-bold">GRATIS (Rp 0)</span>
                     @else
                         <span class="text-slate-800">Rp {{ number_format(($transaksi->durasi_jam ?? 0) * $transaksi->tarif->tarif_per_jam, 0, ',', '.') }}</span>

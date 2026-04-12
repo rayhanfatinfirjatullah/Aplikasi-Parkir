@@ -14,14 +14,23 @@ class Kendaraan extends Model
         'plat_nomor',
         'warna',
         'pemilik',
-        'is_vvip',
+        'status_spesial',
     ];
 
-    protected function casts(): array
+    /**
+     * Check if vehicle is VIP or VVIP (free parking).
+     */
+    public function isFreeParkir(): bool
     {
-        return [
-            'is_vvip' => 'boolean',
-        ];
+        return in_array($this->status_spesial, ['vip', 'vvip']);
+    }
+
+    /**
+     * Check if vehicle is immune to denda (VVIP only).
+     */
+    public function isImmuneDenda(): bool
+    {
+        return $this->status_spesial === 'vvip';
     }
 
     public function transaksi(): HasMany

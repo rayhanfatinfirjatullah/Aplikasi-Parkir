@@ -36,14 +36,18 @@ class TransaksiKeluar extends Component
         $waktuKeluar = now();
         $waktuMasuk = Carbon::parse($transaksi->waktu_masuk);
         $durasiJam = max(1, (int) ceil($waktuMasuk->diffInMinutes($waktuKeluar) / 60));
-        $isVvip = $transaksi->kendaraan->is_vvip;
-        $biayaParkir = $isVvip ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
+        $statusSpesial = $transaksi->kendaraan->status_spesial ?? 'reguler';
+        $isFreeParkir = $transaksi->kendaraan->isFreeParkir();
+        $isImmuneDenda = $transaksi->kendaraan->isImmuneDenda();
+        $biayaParkir = $isFreeParkir ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
 
         $this->checkoutData = [
             'id_parkir' => $transaksi->id_parkir,
             'plat_nomor' => $transaksi->kendaraan->plat_nomor,
             'warna' => $transaksi->kendaraan->warna,
-            'is_vvip' => $isVvip,
+            'status_spesial' => $statusSpesial,
+            'is_free_parkir' => $isFreeParkir,
+            'is_immune_denda' => $isImmuneDenda,
             'pemilik' => $transaksi->kendaraan->pemilik,
             'jenis_kendaraan' => ucfirst($transaksi->tarif->jenis_kendaraan),
             'area' => $transaksi->areaParkir->nama_area,
@@ -66,7 +70,8 @@ class TransaksiKeluar extends Component
     {
         if (!$this->checkoutData) return;
 
-        $denda = $this->isKarcisHilang ? $this->nilaiDenda : 0;
+        $isImmune = $this->checkoutData['is_immune_denda'] ?? false;
+        $denda = ($this->isKarcisHilang && !$isImmune) ? $this->nilaiDenda : 0;
         $this->checkoutData['denda'] = $denda;
         $this->checkoutData['biaya_total'] = $this->checkoutData['biaya_parkir'] + $denda;
     }
@@ -80,9 +85,10 @@ class TransaksiKeluar extends Component
         $waktuKeluar = now();
         $waktuMasuk = Carbon::parse($transaksi->waktu_masuk);
         $durasiJam = max(1, (int) ceil($waktuMasuk->diffInMinutes($waktuKeluar) / 60));
-        $isVvip = $transaksi->kendaraan->is_vvip;
-        $biayaParkir = $isVvip ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
-        $denda = $this->isKarcisHilang ? $this->nilaiDenda : 0;
+        $isFreeParkir = $transaksi->kendaraan->isFreeParkir();
+        $isImmuneDenda = $transaksi->kendaraan->isImmuneDenda();
+        $biayaParkir = $isFreeParkir ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
+        $denda = ($this->isKarcisHilang && !$isImmuneDenda) ? $this->nilaiDenda : 0;
         $biayaTotal = $biayaParkir + $denda;
 
         $transaksi->update([
