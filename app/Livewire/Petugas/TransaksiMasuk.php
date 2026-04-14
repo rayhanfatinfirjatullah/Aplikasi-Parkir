@@ -16,6 +16,7 @@ class TransaksiMasuk extends Component
     public string $pemilik = '';
     public string $jenis_kendaraan = 'motor';
     public string $id_area = '';
+    public string $status_spesial = 'reguler';
 
     protected array $rules = [
         'plat_nomor' => 'required|string|max:20',
@@ -44,12 +45,43 @@ class TransaksiMasuk extends Component
         $this->fillVehicleData();
     }
 
+    public function updatedJenisKendaraan()
+    {
+        $this->autoSelectArea();
+    }
+
     public function fillVehicleData()
     {
         $kendaraan = Kendaraan::where('plat_nomor', $this->plat_nomor)->first();
         if ($kendaraan) {
             $this->warna = $kendaraan->warna;
             $this->pemilik = $kendaraan->pemilik;
+            $this->status_spesial = $kendaraan->status_spesial;
+        } else {
+            $this->status_spesial = 'reguler';
+        }
+        
+        $this->autoSelectArea();
+    }
+
+    public function autoSelectArea()
+    {
+        $areas = AreaParkir::all();
+        $validAreas = collect();
+
+        foreach ($areas as $area) {
+            if (!$area->isFull() && $area->canAcceptVehicleType($this->jenis_kendaraan) && $area->canAccessByPrivilege($this->status_spesial)) {
+                $validAreas->push($area);
+            }
+        }
+
+        if ($validAreas->isNotEmpty()) {
+            $bestArea = $validAreas->sortByDesc(function ($a) {
+                return $a->kapasitas - $a->terisi;
+            })->first();
+            $this->id_area = $bestArea->id_area;
+        } else {
+            $this->id_area = '';
         }
     }
 
@@ -61,6 +93,18 @@ class TransaksiMasuk extends Component
         $area = AreaParkir::findOrFail($this->id_area);
         if ($area->isFull()) {
             $this->addError('id_area', 'Area parkir sudah penuh!');
+            return;
+        }
+
+        // Check vehicle type match
+        if (!$area->canAcceptVehicleType($this->jenis_kendaraan)) {
+            $this->addError('id_area', 'Area ini tidak diperuntukkan bagi kendaraan ' . ucfirst($this->jenis_kendaraan) . '!');
+            return;
+        }
+
+        // Check privilege
+        if (!$area->canAccessByPrivilege($this->status_spesial)) {
+            $this->addError('id_area', 'Kendaraan ini tidak memiliki akses ke area ' . $area->nama_area . '!');
             return;
         }
 

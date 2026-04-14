@@ -110,7 +110,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Jenis Kendaraan</label>
-                            <select wire:model="jenis_kendaraan"
+                            <select wire:model.live="jenis_kendaraan"
                                     class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('jenis_kendaraan') border-red-500 @enderror">
                                 @foreach($tarifs as $tarif)
                                 <option value="{{ $tarif->jenis_kendaraan }}">{{ ucfirst($tarif->jenis_kendaraan) }} - Rp {{ number_format($tarif->tarif_per_jam, 0, ',', '.') }}/jam</option>
@@ -126,8 +126,18 @@
                                     class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('id_area') border-red-500 @enderror">
                                 <option value="">Pilih Area</option>
                                 @foreach($areas as $area)
-                                <option value="{{ $area->id_area }}" {{ $area->isFull() ? 'disabled' : '' }}>
-                                    {{ $area->nama_area }} ({{ $area->sisa_kapasitas }}/{{ $area->kapasitas }} tersedia) {{ $area->isFull() ? '- PENUH' : '' }}
+                                @php
+                                    $isFull = $area->isFull();
+                                    $invalidType = !$area->canAcceptVehicleType($jenis_kendaraan);
+                                    $invalidPrivilege = !$area->canAccessByPrivilege($status_spesial);
+                                    $isDisabled = $isFull || $invalidType || $invalidPrivilege;
+                                    $reason = '';
+                                    if ($isFull) $reason = 'PENUH';
+                                    elseif ($invalidType) $reason = 'BUKAN UNTUK ' . strtoupper($jenis_kendaraan);
+                                    elseif ($invalidPrivilege) $reason = 'BUTUH AKSES ' . strtoupper($area->level_akses);
+                                @endphp
+                                <option value="{{ $area->id_area }}" {{ $isDisabled ? 'disabled' : '' }} class="{{ $isDisabled ? 'text-red-500' : '' }}">
+                                    {{ $area->nama_area }} ({{ $area->sisa_kapasitas }}/{{ $area->kapasitas }} tersedia) {{ $reason ? '- ' . $reason : '' }}
                                 </option>
                                 @endforeach
                             </select>

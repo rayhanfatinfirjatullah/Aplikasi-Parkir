@@ -14,6 +14,8 @@ class AreaParkir extends Model
         'nama_area',
         'kapasitas',
         'terisi',
+        'tipe_kendaraan',
+        'level_akses',
     ];
 
     protected function casts(): array
@@ -37,5 +39,30 @@ class AreaParkir extends Model
     public function isFull(): bool
     {
         return $this->terisi >= $this->kapasitas;
+    }
+
+    /**
+     * Mengecek apakah jenis kendaraan cocok dengan tipe area
+     */
+    public function canAcceptVehicleType(string $jenisKendaraan): bool
+    {
+        if ($this->tipe_kendaraan === 'semua') return true;
+        // Hanya membolehkan yang tepat eksak (motor untuk motor, mobil untuk mobil)
+        return $this->tipe_kendaraan === strtolower($jenisKendaraan);
+    }
+
+    /**
+     * Mengecek apakah status spesial (privilage) bisa mengakses area ini
+     */
+    public function canAccessByPrivilege(string $statusSpesial): bool
+    {
+        $statusSpesial = strtolower($statusSpesial);
+        // Mapping hirarki akses
+        $levelValue = ['reguler' => 1, 'vip' => 2, 'vvip' => 3];
+        
+        $kendaraanLevel = $levelValue[$statusSpesial] ?? 1;
+        $areaLevel = $levelValue[$this->level_akses] ?? 1;
+
+        return $kendaraanLevel >= $areaLevel;
     }
 }

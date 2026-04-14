@@ -38,6 +38,14 @@
                     </button>
                 </div>
             </div>
+            <div class="flex gap-2 mb-4">
+                <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 uppercase tracking-wider">
+                    Kendaraan: {{ $area->tipe_kendaraan }}
+                </span>
+                <span class="px-2.5 py-1 {{ $area->level_akses == 'vvip' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 border-amber-200 dark:border-amber-800' : ($area->level_akses == 'vip' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 border-blue-200 dark:border-blue-800' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600') }} text-xs font-semibold rounded-lg border uppercase tracking-wider">
+                    Akses: {{ $area->level_akses }}
+                </span>
+            </div>
             <div class="space-y-3">
                 <div class="flex justify-between text-sm">
                     <span class="text-slate-500 dark:text-slate-400">Kapasitas</span>
@@ -78,6 +86,24 @@
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Kapasitas</label>
                         <input wire:model="kapasitas" type="number" min="1" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('kapasitas') border-red-500 @enderror">
                         @error('kapasitas') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tipe Kendaraan</label>
+                        <select wire:model="tipe_kendaraan" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('tipe_kendaraan') border-red-500 @enderror">
+                            <option value="semua">Semua</option>
+                            <option value="motor">Motor</option>
+                            <option value="mobil">Mobil</option>
+                        </select>
+                        @error('tipe_kendaraan') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Level Akses Minimum</label>
+                        <select wire:model="level_akses" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('level_akses') border-red-500 @enderror">
+                            <option value="reguler">Reguler</option>
+                            <option value="vip">VIP</option>
+                            <option value="vvip">VVIP</option>
+                        </select>
+                        @error('level_akses') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6">

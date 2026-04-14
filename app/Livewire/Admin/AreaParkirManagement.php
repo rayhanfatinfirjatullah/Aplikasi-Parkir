@@ -18,10 +18,14 @@ class AreaParkirManagement extends Component
 
     public string $nama_area = '';
     public string $kapasitas = '';
+    public string $tipe_kendaraan = 'semua';
+    public string $level_akses = 'reguler';
 
     protected array $rules = [
         'nama_area' => 'required|string|max:255',
         'kapasitas' => 'required|integer|min:1',
+        'tipe_kendaraan' => 'required|in:motor,mobil,semua',
+        'level_akses' => 'required|in:reguler,vip,vvip',
     ];
 
     protected array $messages = [
@@ -30,11 +34,15 @@ class AreaParkirManagement extends Component
         'kapasitas.required' => 'Kapasitas wajib diisi',
         'kapasitas.integer' => 'Kapasitas harus berupa angka',
         'kapasitas.min' => 'Kapasitas minimal 1',
+        'tipe_kendaraan.required' => 'Tipe kendaraan wajib dipilih',
+        'tipe_kendaraan.in' => 'Tipe kendaraan tidak valid',
+        'level_akses.required' => 'Level akses wajib dipilih',
+        'level_akses.in' => 'Level akses tidak valid',
     ];
 
     public function openCreate()
     {
-        $this->reset(['nama_area', 'kapasitas', 'editId', 'isEdit']);
+        $this->reset(['nama_area', 'kapasitas', 'tipe_kendaraan', 'level_akses', 'editId', 'isEdit']);
         $this->showModal = true;
     }
 
@@ -45,12 +53,14 @@ class AreaParkirManagement extends Component
         $this->isEdit = true;
         $this->nama_area = $area->nama_area;
         $this->kapasitas = $area->kapasitas;
+        $this->tipe_kendaraan = $area->tipe_kendaraan;
+        $this->level_akses = $area->level_akses;
         $this->showModal = true;
     }
 
     public function closeModal()
     {
-        $this->reset(['nama_area', 'kapasitas', 'editId', 'isEdit']);
+        $this->reset(['nama_area', 'kapasitas', 'tipe_kendaraan', 'level_akses', 'editId', 'isEdit']);
         $this->resetValidation();
         $this->showModal = false;
     }
@@ -62,6 +72,8 @@ class AreaParkirManagement extends Component
         $data = [
             'nama_area' => $this->nama_area,
             'kapasitas' => $this->kapasitas,
+            'tipe_kendaraan' => $this->tipe_kendaraan,
+            'level_akses' => $this->level_akses,
         ];
 
         if ($this->isEdit) {

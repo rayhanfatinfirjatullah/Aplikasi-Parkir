@@ -56,21 +56,35 @@ class DatabaseSeeder extends Seeder
 
         // Seed Area Parkir
         AreaParkir::create([
-            'nama_area' => 'Area A',
+            'nama_area' => 'Parkir Motor',
+            'kapasitas' => 150,
+            'terisi' => 0,
+            'tipe_kendaraan' => 'motor',
+            'level_akses' => 'reguler',
+        ]);
+
+        AreaParkir::create([
+            'nama_area' => 'Parkir Mobil',
+            'kapasitas' => 75,
+            'terisi' => 0,
+            'tipe_kendaraan' => 'mobil',
+            'level_akses' => 'reguler',
+        ]);
+
+        AreaParkir::create([
+            'nama_area' => 'Staff Lane (VIP)',
             'kapasitas' => 50,
             'terisi' => 0,
+            'tipe_kendaraan' => 'semua',
+            'level_akses' => 'vip',
         ]);
 
         AreaParkir::create([
-            'nama_area' => 'Area B',
-            'kapasitas' => 30,
+            'nama_area' => 'Executive Prime (VVIP)',
+            'kapasitas' => 10,
             'terisi' => 0,
-        ]);
-
-        AreaParkir::create([
-            'nama_area' => 'Area C',
-            'kapasitas' => 20,
-            'terisi' => 0,
+            'tipe_kendaraan' => 'semua',
+            'level_akses' => 'vvip',
         ]);
 
         // Seed Pengaturan
