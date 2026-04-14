@@ -34,7 +34,14 @@
                     @forelse($transaksis as $t)
                     <tr wire:key="trx-{{ $t->id_parkir }}" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300 font-mono">#{{ str_pad($t->id_parkir, 6, '0', STR_PAD_LEFT) }}</td>
-                        <td class="px-6 py-4 font-bold text-slate-800 dark:text-white tracking-wider">{{ $t->kendaraan->plat_nomor }}</td>
+                        <td class="px-6 py-4 font-bold text-slate-800 dark:text-white tracking-wider">
+                            {{ $t->kendaraan->plat_nomor }}
+                            @if($t->kendaraan->status_spesial === 'vvip')
+                            <span class="ml-1.5 px-2 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">VVIP</span>
+                            @elseif($t->kendaraan->status_spesial === 'vip')
+                            <span class="ml-1.5 px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-blue-200 dark:border-blue-800">VIP</span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ ucfirst($t->tarif->jenis_kendaraan) }}</td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $t->areaParkir->nama_area }}</td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $t->waktu_masuk->format('d/m/Y H:i') }}</td>

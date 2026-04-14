@@ -41,6 +41,11 @@ class TransaksiMasuk extends Component
     public function updatedPlatNomor()
     {
         $this->plat_nomor = strtoupper($this->plat_nomor);
+        $this->fillVehicleData();
+    }
+
+    public function fillVehicleData()
+    {
         $kendaraan = Kendaraan::where('plat_nomor', $this->plat_nomor)->first();
         if ($kendaraan) {
             $this->warna = $kendaraan->warna;
