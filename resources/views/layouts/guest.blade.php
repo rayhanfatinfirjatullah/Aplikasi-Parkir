@@ -12,5 +12,26 @@
 <body class="font-inter antialiased">
     {{ $slot }}
     @livewireScripts
+
+    <script>
+
+    // Global Enter key handler untuk memindahkan fokus ke input selanjutnya
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            const form = e.target.form;
+            if(form) {
+                const focusable = Array.from(form.elements).filter(el => 
+                    !el.disabled && !el.readOnly && el.type !== 'hidden' &&
+                    (el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'BUTTON')
+                );
+                const index = focusable.indexOf(e.target);
+                if (index > -1 && index < focusable.length - 1) {
+                    focusable[index + 1].focus();
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>

@@ -16,6 +16,9 @@ class Login extends Component
         $this->validate([
             'username' => 'required',
             'password' => 'required',
+        ], [
+            'username.required' => 'Silakan masukkan username Anda.',
+            'password.required' => 'Silakan masukkan password Anda.',
         ]);
 
         if (Auth::attempt(['username' => $this->username, 'password' => $this->password])) {
@@ -23,7 +26,7 @@ class Login extends Component
 
             if (!$user->status_aktif) {
                 Auth::logout();
-                $this->addError('username', 'Akun Anda tidak aktif. Hubungi administrator.');
+                $this->addError('username', 'Akun Anda saat ini dinonaktifkan. Silakan hubungi administrator.');
                 return;
             }
 
@@ -43,7 +46,7 @@ class Login extends Component
             };
         }
 
-        $this->addError('username', 'Username atau password salah.');
+        $this->addError('username', 'Username atau password yang Anda masukkan tidak valid.');
     }
 
     public function render()
