@@ -53,11 +53,6 @@
                             <div class="relative">
                                 <!-- Trigger input -->
                                 <input x-model="search" x-on:input="search = formatPlat($event.target.value); open = true" x-on:focus="open = true" @keydown.escape.window="open = false" type="text" placeholder="Contoh: B 1234 ABC" maxlength="11" autocomplete="off" class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 text-lg font-bold tracking-wider uppercase @error('plat_nomor') border-red-500 @enderror">
-                                
-                                <!-- Search Icon -->
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                </div>
 
                                 <!-- Custom Dropdown List -->
                                 <div x-show="open && filteredVehicles.length > 0" x-transition.opacity class="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden" style="display: none;">
