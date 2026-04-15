@@ -39,7 +39,7 @@
                 </div>
             </div>
             <div class="flex gap-2 mb-4">
-                <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 uppercase tracking-wider">
+                <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-600 uppercase tracking-wider truncate max-w-[150px]" title="{{ $area->tipe_kendaraan }}">
                     Kendaraan: {{ $area->tipe_kendaraan }}
                 </span>
                 <span class="px-2.5 py-1 {{ $area->level_akses == 'vvip' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 border-amber-200 dark:border-amber-800' : ($area->level_akses == 'vip' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 border-blue-200 dark:border-blue-800' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600') }} text-xs font-semibold rounded-lg border uppercase tracking-wider">
@@ -88,12 +88,19 @@
                         @error('kapasitas') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tipe Kendaraan</label>
-                        <select wire:model="tipe_kendaraan" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('tipe_kendaraan') border-red-500 @enderror">
-                            <option value="semua">Semua</option>
-                            <option value="motor">Motor</option>
-                            <option value="mobil">Mobil</option>
-                        </select>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Tipe Kendaraan (Bisa Pilih Lebih Dari 1)</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <label class="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-600 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm {{ in_array('semua', $tipe_kendaraan) ? 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800' : 'bg-white dark:bg-slate-700' }}">
+                                <input type="checkbox" wire:model.live="tipe_kendaraan" value="semua" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Semua Jenis</span>
+                            </label>
+                            @foreach(\App\Models\Tarif::all() as $tarif)
+                            <label class="flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-600 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm {{ in_array($tarif->jenis_kendaraan, $tipe_kendaraan) ? 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800' : 'bg-white dark:bg-slate-700' }}">
+                                <input type="checkbox" wire:model.live="tipe_kendaraan" value="{{ $tarif->jenis_kendaraan }}" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ ucfirst($tarif->jenis_kendaraan) }}</span>
+                            </label>
+                            @endforeach
+                        </div>
                         @error('tipe_kendaraan') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>

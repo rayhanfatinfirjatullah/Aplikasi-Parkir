@@ -113,11 +113,10 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Jenis Kendaraan</label>
-                        <select wire:model="jenis_kendaraan" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('jenis_kendaraan') border-red-500 @enderror">
-                            <option value="motor">Motor</option>
-                            <option value="mobil">Mobil</option>
-                            <option value="lainnya">Lainnya</option>
-                        </select>
+                        <div class="relative">
+                            <input type="text" wire:model="jenis_kendaraan" list="jenis-kendaraan-list" placeholder="Ketik atau pilih jenis kendaraan..." 
+                                   class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('jenis_kendaraan') border-red-500 @enderror">
+                        </div>
                         @error('jenis_kendaraan') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>

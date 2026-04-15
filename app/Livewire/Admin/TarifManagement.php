@@ -17,7 +17,7 @@ class TarifManagement extends Component
     public bool $isEdit = false;
     public ?int $editId = null;
 
-    public string $jenis_kendaraan = 'motor';
+    public string $jenis_kendaraan = '';
     public string $tarif_per_jam = '';
 
     // Pengaturan denda
@@ -28,14 +28,18 @@ class TarifManagement extends Component
         $this->denda_karcis_hilang = Pengaturan::getValue('denda_karcis_hilang', '20000');
     }
 
-    protected array $rules = [
-        'jenis_kendaraan' => 'required|in:motor,mobil,lainnya',
-        'tarif_per_jam' => 'required|numeric|min:0',
-    ];
+    public function rules()
+    {
+        return [
+            'jenis_kendaraan' => 'required|string|max:50|unique:tb_tarif,jenis_kendaraan,' . ($this->isEdit ? $this->editId : 'NULL') . ',id_tarif',
+            'tarif_per_jam' => 'required|numeric|min:0',
+        ];
+    }
 
     protected array $messages = [
-        'jenis_kendaraan.required' => 'Jenis kendaraan wajib dipilih',
-        'jenis_kendaraan.in' => 'Jenis kendaraan tidak valid',
+        'jenis_kendaraan.required' => 'Jenis kendaraan wajib diisi',
+        'jenis_kendaraan.unique' => 'Jenis kendaraan ini sudah ada di daftar tarif',
+        'jenis_kendaraan.max' => 'Jenis kendaraan maksimal 50 karakter',
         'tarif_per_jam.required' => 'Tarif per jam wajib diisi',
         'tarif_per_jam.numeric' => 'Tarif per jam harus berupa angka',
         'tarif_per_jam.min' => 'Tarif per jam minimal 0',
@@ -44,7 +48,7 @@ class TarifManagement extends Component
     public function openCreate()
     {
         $this->reset(['jenis_kendaraan', 'tarif_per_jam', 'editId', 'isEdit']);
-        $this->jenis_kendaraan = 'motor';
+        $this->jenis_kendaraan = '';
         $this->showModal = true;
     }
 
@@ -70,7 +74,7 @@ class TarifManagement extends Component
         $this->validate();
 
         $data = [
-            'jenis_kendaraan' => $this->jenis_kendaraan,
+            'jenis_kendaraan' => strtolower($this->jenis_kendaraan),
             'tarif_per_jam' => $this->tarif_per_jam,
         ];
 

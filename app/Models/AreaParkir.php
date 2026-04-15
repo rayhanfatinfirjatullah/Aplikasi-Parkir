@@ -46,9 +46,9 @@ class AreaParkir extends Model
      */
     public function canAcceptVehicleType(string $jenisKendaraan): bool
     {
-        if ($this->tipe_kendaraan === 'semua') return true;
-        // Hanya membolehkan yang tepat eksak (motor untuk motor, mobil untuk mobil)
-        return $this->tipe_kendaraan === strtolower($jenisKendaraan);
+        $allowedTypes = array_map('trim', explode(',', strtolower($this->tipe_kendaraan)));
+        if (in_array('semua', $allowedTypes)) return true;
+        return in_array(strtolower($jenisKendaraan), $allowedTypes);
     }
 
     /**

@@ -22,7 +22,7 @@ class TransaksiMasuk extends Component
         'plat_nomor' => 'required|string|max:20',
         'warna' => 'required|string|max:50',
         'pemilik' => 'required|string|max:255',
-        'jenis_kendaraan' => 'required|in:motor,mobil,lainnya',
+        'jenis_kendaraan' => 'required|string|max:50',
         'id_area' => 'required|exists:tb_area_parkir,id_area',
     ];
 
@@ -34,7 +34,7 @@ class TransaksiMasuk extends Component
         'pemilik.required' => 'Nama pemilik wajib diisi',
         'pemilik.max' => 'Nama pemilik maksimal 255 karakter',
         'jenis_kendaraan.required' => 'Jenis kendaraan wajib dipilih',
-        'jenis_kendaraan.in' => 'Jenis kendaraan tidak valid',
+        'jenis_kendaraan.max' => 'Jenis kendaraan maksimal 50 karakter',
         'id_area.required' => 'Area parkir wajib dipilih',
         'id_area.exists' => 'Area parkir tidak ditemukan',
     ];
