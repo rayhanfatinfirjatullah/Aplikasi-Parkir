@@ -65,4 +65,21 @@ class AreaParkir extends Model
 
         return $kendaraanLevel >= $areaLevel;
     }
+
+    public function getFormatTipeKendaraanAttribute(): string
+    {
+        $types = array_map('trim', explode(',', strtolower($this->tipe_kendaraan)));
+        if (in_array('semua', $types)) {
+            return 'Semua Jenis';
+        }
+
+        $validTarifs = \App\Models\Tarif::pluck('jenis_kendaraan')->map(fn($item) => strtolower($item))->toArray();
+        $filtered = array_intersect($types, $validTarifs);
+
+        if (empty($filtered)) {
+            return 'Tidak Ada / Invalid';
+        }
+
+        return implode(', ', array_map('ucfirst', $filtered));
+    }
 }

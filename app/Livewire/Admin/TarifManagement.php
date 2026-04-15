@@ -120,11 +120,30 @@ class TarifManagement extends Component
     public function delete($id)
     {
         $tarif = Tarif::findOrFail($id);
+        $jenisTerhapus = strtolower($tarif->jenis_kendaraan);
+        
         LogModel::create([
             'id_user' => auth()->user()->id_user,
             'aktivitas' => "Menghapus tarif {$tarif->jenis_kendaraan}",
             'waktu_aktivitas' => now(),
         ]);
+        
+        // Membersihkan tipe_kendaraan di Area Parkir yang mengandung jenis kendaraan ini
+        $areas = \App\Models\AreaParkir::all();
+        foreach ($areas as $area) {
+            $types = array_map('trim', explode(',', $area->tipe_kendaraan));
+            if (in_array($jenisTerhapus, $types)) {
+                $types = array_filter($types, fn($t) => $t !== $jenisTerhapus);
+                // Jika kosong, jadikan 'semua' sebagai default aman
+                if (empty($types)) {
+                    $types = ['semua'];
+                }
+                $area->update([
+                    'tipe_kendaraan' => implode(', ', $types)
+                ]);
+            }
+        }
+
         $tarif->delete();
         session()->flash('success', 'Tarif berhasil dihapus!');
     }
