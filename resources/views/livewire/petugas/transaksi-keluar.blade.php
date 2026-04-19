@@ -35,10 +35,10 @@
                     <tr wire:key="trx-{{ $t->id_parkir }}" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300 font-mono">#{{ str_pad($t->id_parkir, 6, '0', STR_PAD_LEFT) }}</td>
                         <td class="px-6 py-4 font-bold text-slate-800 dark:text-white tracking-wider">
-                            {{ $t->kendaraan->plat_nomor }}
-                            @if($t->kendaraan->status_spesial === 'vvip')
+                            {{ $t->plat_nomor }}
+                            @if(($t->status_spesial ?? 'reguler') === 'vvip')
                             <span class="ml-1.5 px-2 py-0.5 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800">VVIP</span>
-                            @elseif($t->kendaraan->status_spesial === 'vip')
+                            @elseif(($t->status_spesial ?? 'reguler') === 'vip')
                             <span class="ml-1.5 px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-blue-200 dark:border-blue-800">VIP</span>
                             @endif
                         </td>
@@ -74,8 +74,8 @@
 
     <!-- Checkout Modal -->
     @if($showCheckout && $checkoutData)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto py-6">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6">Konfirmasi Check-out</h3>
 
             <div class="space-y-3 mb-6">

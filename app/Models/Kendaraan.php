@@ -15,6 +15,7 @@ class Kendaraan extends Model
         'warna',
         'pemilik',
         'status_spesial',
+        'jenis_kendaraan',
     ];
 
     /**

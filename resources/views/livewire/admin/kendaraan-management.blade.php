@@ -26,6 +26,7 @@
                     <tr>
                         <th class="px-6 py-4 text-left font-semibold text-slate-600 dark:text-slate-300">No</th>
                         <th class="px-6 py-4 text-left font-semibold text-slate-600 dark:text-slate-300">Plat Nomor</th>
+                        <th class="px-6 py-4 text-left font-semibold text-slate-600 dark:text-slate-300">Jenis</th>
                         <th class="px-6 py-4 text-left font-semibold text-slate-600 dark:text-slate-300">Warna</th>
                         <th class="px-6 py-4 text-left font-semibold text-slate-600 dark:text-slate-300">Pemilik</th>
                         <th class="px-6 py-4 text-center font-semibold text-slate-600 dark:text-slate-300">Aksi</th>
@@ -42,6 +43,11 @@
                             @elseif($k->status_spesial === 'vip')
                             <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 rounded-full text-[10px] font-bold uppercase tracking-wider border border-blue-200 dark:border-blue-800">VIP</span>
                             @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $k->jenis_kendaraan === 'mobil' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' : 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400' }}">
+                                {{ ucfirst($k->jenis_kendaraan) }}
+                            </span>
                         </td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $k->warna }}</td>
                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $k->pemilik }}</td>
@@ -63,7 +69,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">Tidak ada data kendaraan</td>
+                        <td colspan="6" class="px-6 py-12 text-center text-slate-500 dark:text-slate-400">Tidak ada data kendaraan</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -73,8 +79,8 @@
     </div>
 
     @if($showModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto py-6">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6">{{ $isEdit ? 'Edit Kendaraan' : 'Tambah Kendaraan' }}</h3>
             <form wire:submit="save">
                 <div class="space-y-4">
@@ -118,6 +124,21 @@
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Pemilik</label>
                         <input wire:model="pemilik" type="text" x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')" class="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 @error('pemilik') border-red-500 @enderror">
                         @error('pemilik') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Jenis Kendaraan</label>
+                        <div class="grid grid-cols-{{ count($tarifs) }} gap-2">
+                            @foreach($tarifs as $tarif)
+                            <label class="relative cursor-pointer">
+                                <input wire:model="jenis_kendaraan" type="radio" value="{{ $tarif->jenis_kendaraan }}" class="sr-only peer">
+                                <div class="p-3 text-center rounded-xl border-2 transition-all peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 border-slate-200 dark:border-slate-600 hover:border-blue-300">
+                                    <span class="block text-sm font-bold text-slate-700 dark:text-slate-300">{{ ucfirst($tarif->jenis_kendaraan) }}</span>
+                                    <span class="block text-[10px] text-slate-400 mt-1">Rp {{ number_format($tarif->tarif_per_jam, 0, ',', '.') }}/jam</span>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                        @error('jenis_kendaraan') <div class="text-xs text-red-500 mt-1">{{ $message }}</div> @enderror
                     </div>
                     <!-- Status Spesial -->
                     <div class="p-4 bg-slate-50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-600 rounded-xl">

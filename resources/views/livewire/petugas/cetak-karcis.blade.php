@@ -11,9 +11,9 @@
                 </div>
                 <h1 class="text-xl font-bold text-slate-800">KARCIS MASUK</h1>
                 <p class="text-sm text-slate-500">Aplikasi Parkir</p>
-                @if($transaksi->kendaraan->status_spesial === 'vvip')
+                @if(($transaksi->status_spesial ?? 'reguler') === 'vvip')
                 <div class="mt-2 inline-block px-3 py-0.5 bg-amber-100 text-amber-800 border border-amber-200 font-bold text-[10px] uppercase tracking-widest rounded-full">Member VVIP</div>
-                @elseif($transaksi->kendaraan->status_spesial === 'vip')
+                @elseif(($transaksi->status_spesial ?? 'reguler') === 'vip')
                 <div class="mt-2 inline-block px-3 py-0.5 bg-blue-100 text-blue-800 border border-blue-200 font-bold text-[10px] uppercase tracking-widest rounded-full">Member VIP</div>
                 @endif
             </div>
@@ -28,7 +28,7 @@
             <div class="space-y-2.5 text-sm border-b border-dashed border-slate-300 pb-4 mb-4">
                 <div class="flex justify-between">
                     <span class="text-slate-500">Plat Nomor</span>
-                    <span class="font-bold text-slate-800 tracking-wider">{{ $transaksi->kendaraan->plat_nomor }}</span>
+                    <span class="font-bold text-slate-800 tracking-wider">{{ $transaksi->plat_nomor }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Jenis Kendaraan</span>
@@ -36,11 +36,11 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Warna</span>
-                    <span class="text-slate-800">{{ $transaksi->kendaraan->warna }}</span>
+                    <span class="text-slate-800">{{ $transaksi->warna }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Pemilik</span>
-                    <span class="text-slate-800">{{ $transaksi->kendaraan->pemilik }}</span>
+                    <span class="text-slate-800">{{ $transaksi->pemilik }}</span>
                 </div>
             </div>
 
@@ -56,7 +56,7 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Tarif / Jam</span>
-                    @if($transaksi->kendaraan->isFreeParkir())
+                    @if(in_array($transaksi->status_spesial ?? 'reguler', ['vip', 'vvip']))
                         <span class="text-emerald-600 font-bold">GRATIS (Rp 0)</span>
                     @else
                         <span class="text-slate-800">Rp {{ number_format($transaksi->tarif->tarif_per_jam, 0, ',', '.') }}</span>
@@ -64,9 +64,9 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Denda</span>
-                    @if($transaksi->kendaraan->isImmuneDenda())
+                    @if(($transaksi->status_spesial ?? 'reguler') === 'vvip')
                         <span class="text-emerald-600 font-bold">Rp 0 (Bebas Denda)</span>
-                    @elseif($transaksi->kendaraan->status_spesial === 'vip')
+                    @elseif(($transaksi->status_spesial ?? 'reguler') === 'vip')
                         <span class="text-amber-600 font-semibold">Normal</span>
                     @else
                         <span class="text-slate-800">Normal</span>

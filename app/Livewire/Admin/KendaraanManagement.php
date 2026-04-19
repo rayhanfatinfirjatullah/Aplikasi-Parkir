@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Kendaraan;
+use App\Models\Tarif;
 use App\Models\LogAktivitas as LogModel;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -20,6 +21,7 @@ class KendaraanManagement extends Component
     public string $warna = '';
     public string $pemilik = '';
     public string $status_spesial = 'reguler';
+    public string $jenis_kendaraan = 'motor';
 
     protected function rules()
     {
@@ -29,6 +31,7 @@ class KendaraanManagement extends Component
             'warna' => 'required|string|max:50',
             'pemilik' => 'required|string|max:255',
             'status_spesial' => 'required|in:reguler,vip,vvip',
+            'jenis_kendaraan' => 'required|exists:tb_tarif,jenis_kendaraan',
         ];
     }
 
@@ -40,6 +43,8 @@ class KendaraanManagement extends Component
         'warna.max' => 'Warna maksimal 50 karakter',
         'pemilik.required' => 'Pemilik wajib diisi',
         'pemilik.max' => 'Pemilik maksimal 255 karakter',
+        'jenis_kendaraan.required' => 'Jenis kendaraan wajib dipilih',
+        'jenis_kendaraan.in' => 'Jenis kendaraan tidak valid',
     ];
 
     public function updatingSearch()
@@ -49,7 +54,7 @@ class KendaraanManagement extends Component
 
     public function openCreate()
     {
-        $this->reset(['plat_nomor', 'warna', 'pemilik', 'status_spesial', 'editId', 'isEdit']);
+        $this->reset(['plat_nomor', 'warna', 'pemilik', 'status_spesial', 'jenis_kendaraan', 'editId', 'isEdit']);
         $this->showModal = true;
     }
 
@@ -62,12 +67,13 @@ class KendaraanManagement extends Component
         $this->warna = $kendaraan->warna;
         $this->pemilik = $kendaraan->pemilik;
         $this->status_spesial = $kendaraan->status_spesial ?? 'reguler';
+        $this->jenis_kendaraan = $kendaraan->jenis_kendaraan ?? 'motor';
         $this->showModal = true;
     }
 
     public function closeModal()
     {
-        $this->reset(['plat_nomor', 'warna', 'pemilik', 'status_spesial', 'editId', 'isEdit']);
+        $this->reset(['plat_nomor', 'warna', 'pemilik', 'status_spesial', 'jenis_kendaraan', 'editId', 'isEdit']);
         $this->resetValidation();
         $this->showModal = false;
     }
@@ -81,6 +87,7 @@ class KendaraanManagement extends Component
             'warna' => $this->warna,
             'pemilik' => $this->pemilik,
             'status_spesial' => $this->status_spesial,
+            'jenis_kendaraan' => $this->jenis_kendaraan,
         ];
 
         if ($this->isEdit) {
@@ -120,7 +127,9 @@ class KendaraanManagement extends Component
               ->orWhere('pemilik', 'like', "%{$this->search}%");
         })->orderBy('id_kendaraan', 'desc')->paginate(10);
 
-        return view('livewire.admin.kendaraan-management', compact('kendaraans'))
+        $tarifs = Tarif::all();
+
+        return view('livewire.admin.kendaraan-management', compact('kendaraans', 'tarifs'))
             ->layout('layouts.app');
     }
 }

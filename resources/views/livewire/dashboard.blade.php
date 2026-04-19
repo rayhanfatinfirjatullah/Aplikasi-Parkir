@@ -103,7 +103,7 @@
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                         @forelse($transaksiTerbaru as $t)
                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                            <td class="py-3 font-medium text-slate-800 dark:text-white">{{ $t->kendaraan->plat_nomor }}</td>
+                            <td class="py-3 font-medium text-slate-800 dark:text-white">{{ $t->plat_nomor }}</td>
                             <td class="py-3 text-slate-600 dark:text-slate-300">{{ ucfirst($t->tarif->jenis_kendaraan) }}</td>
                             <td class="py-3 text-slate-600 dark:text-slate-300">{{ $t->areaParkir->nama_area }}</td>
                             <td class="py-3 text-slate-600 dark:text-slate-300">{{ $t->waktu_masuk->format('d/m/Y H:i') }}</td>

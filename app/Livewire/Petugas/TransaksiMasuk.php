@@ -22,7 +22,7 @@ class TransaksiMasuk extends Component
         'plat_nomor' => 'required|string|max:20',
         'warna' => 'required|string|max:50',
         'pemilik' => 'required|string|max:255',
-        'jenis_kendaraan' => 'required|string|max:50',
+        'jenis_kendaraan' => 'required|exists:tb_tarif,jenis_kendaraan',
         'id_area' => 'required|exists:tb_area_parkir,id_area',
     ];
 
@@ -108,34 +108,40 @@ class TransaksiMasuk extends Component
             return;
         }
 
-        // Check if vehicle already parked
-        $existing = Transaksi::whereHas('kendaraan', function ($q) {
-            $q->where('plat_nomor', $this->plat_nomor);
-        })->where('status', 'masuk')->first();
+        // Check if vehicle already parked (check directly on transaksi table)
+        $existing = Transaksi::where('plat_nomor', strtoupper($this->plat_nomor))
+            ->where('status', 'masuk')
+            ->first();
 
         if ($existing) {
             $this->addError('plat_nomor', 'Kendaraan dengan plat nomor ini masih terparkir!');
             return;
         }
 
-        // Create or find kendaraan
-        $kendaraan = Kendaraan::firstOrCreate(
-            ['plat_nomor' => strtoupper($this->plat_nomor)],
-            ['warna' => $this->warna, 'pemilik' => $this->pemilik]
-        );
+        // Determine if this is a registered (VIP/VVIP) vehicle
+        $kendaraan = Kendaraan::where('plat_nomor', strtoupper($this->plat_nomor))->first();
+        $idKendaraan = null;
 
-        // Update kendaraan if data changed
-        $kendaraan->update(['warna' => $this->warna, 'pemilik' => $this->pemilik]);
+        if ($kendaraan) {
+            // Update master data if info changed
+            $kendaraan->update(['warna' => $this->warna, 'pemilik' => $this->pemilik]);
+            $idKendaraan = $kendaraan->id_kendaraan;
+        }
+        // For reguler vehicles, we DON'T create a master record — data goes directly into transaksi
 
         // Get tarif
         $tarif = Tarif::where('jenis_kendaraan', $this->jenis_kendaraan)->firstOrFail();
 
-        // Create transaksi
+        // Create transaksi with denormalized vehicle data
         $transaksi = Transaksi::create([
-            'id_kendaraan' => $kendaraan->id_kendaraan,
+            'id_kendaraan' => $idKendaraan,
             'id_tarif' => $tarif->id_tarif,
             'id_area' => $area->id_area,
             'id_user' => auth()->user()->id_user,
+            'plat_nomor' => strtoupper($this->plat_nomor),
+            'warna' => $this->warna,
+            'pemilik' => $this->pemilik,
+            'status_spesial' => $this->status_spesial,
             'waktu_masuk' => now(),
             'status' => 'masuk',
         ]);
@@ -146,7 +152,7 @@ class TransaksiMasuk extends Component
         // Log activity
         LogAktivitas::create([
             'id_user' => auth()->user()->id_user,
-            'aktivitas' => "Check-in kendaraan {$kendaraan->plat_nomor} di {$area->nama_area}",
+            'aktivitas' => "Check-in kendaraan " . strtoupper($this->plat_nomor) . " di {$area->nama_area}",
             'waktu_aktivitas' => now(),
         ]);
 

@@ -36,19 +36,19 @@ class TransaksiKeluar extends Component
         $waktuKeluar = now();
         $waktuMasuk = Carbon::parse($transaksi->waktu_masuk);
         $durasiJam = max(1, (int) ceil($waktuMasuk->diffInMinutes($waktuKeluar) / 60));
-        $statusSpesial = $transaksi->kendaraan->status_spesial ?? 'reguler';
-        $isFreeParkir = $transaksi->kendaraan->isFreeParkir();
-        $isImmuneDenda = $transaksi->kendaraan->isImmuneDenda();
+        $statusSpesial = $transaksi->status_spesial ?? 'reguler';
+        $isFreeParkir = in_array($statusSpesial, ['vip', 'vvip']);
+        $isImmuneDenda = $statusSpesial === 'vvip';
         $biayaParkir = $isFreeParkir ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
 
         $this->checkoutData = [
             'id_parkir' => $transaksi->id_parkir,
-            'plat_nomor' => $transaksi->kendaraan->plat_nomor,
-            'warna' => $transaksi->kendaraan->warna,
+            'plat_nomor' => $transaksi->plat_nomor,
+            'warna' => $transaksi->warna,
             'status_spesial' => $statusSpesial,
             'is_free_parkir' => $isFreeParkir,
             'is_immune_denda' => $isImmuneDenda,
-            'pemilik' => $transaksi->kendaraan->pemilik,
+            'pemilik' => $transaksi->pemilik,
             'jenis_kendaraan' => ucfirst($transaksi->tarif->jenis_kendaraan),
             'area' => $transaksi->areaParkir->nama_area,
             'waktu_masuk' => $transaksi->waktu_masuk->format('d/m/Y H:i'),
@@ -80,13 +80,14 @@ class TransaksiKeluar extends Component
     {
         if (!$this->checkoutData) return;
 
-        $transaksi = Transaksi::with(['areaParkir', 'kendaraan', 'tarif'])->findOrFail($this->checkoutData['id_parkir']);
+        $transaksi = Transaksi::with(['areaParkir', 'tarif'])->findOrFail($this->checkoutData['id_parkir']);
 
         $waktuKeluar = now();
         $waktuMasuk = Carbon::parse($transaksi->waktu_masuk);
         $durasiJam = max(1, (int) ceil($waktuMasuk->diffInMinutes($waktuKeluar) / 60));
-        $isFreeParkir = $transaksi->kendaraan->isFreeParkir();
-        $isImmuneDenda = $transaksi->kendaraan->isImmuneDenda();
+        $statusSpesial = $transaksi->status_spesial ?? 'reguler';
+        $isFreeParkir = in_array($statusSpesial, ['vip', 'vvip']);
+        $isImmuneDenda = $statusSpesial === 'vvip';
         $biayaParkir = $isFreeParkir ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
         $denda = ($this->isKarcisHilang && !$isImmuneDenda) ? $this->nilaiDenda : 0;
         $biayaTotal = $biayaParkir + $denda;
@@ -103,7 +104,7 @@ class TransaksiKeluar extends Component
         $transaksi->areaParkir->decrement('terisi');
 
         // Log activity
-        $logMessage = "Check-out kendaraan {$transaksi->kendaraan->plat_nomor}, biaya: Rp " . number_format($biayaTotal, 0, ',', '.');
+        $logMessage = "Check-out kendaraan {$transaksi->plat_nomor}, biaya: Rp " . number_format($biayaTotal, 0, ',', '.');
         if ($denda > 0) {
             $logMessage .= " (termasuk denda karcis hilang: Rp " . number_format($denda, 0, ',', '.') . ")";
         }
@@ -122,13 +123,12 @@ class TransaksiKeluar extends Component
 
     public function render()
     {
-        $transaksis = Transaksi::with(['kendaraan', 'tarif', 'areaParkir', 'user'])
+        $transaksis = Transaksi::with(['tarif', 'areaParkir', 'user'])
             ->where('status', 'masuk')
             ->when($this->search, function ($q) {
                 $q->where(function ($q2) {
-                    $q2->whereHas('kendaraan', function ($q3) {
-                        $q3->where('plat_nomor', 'like', "%{$this->search}%");
-                    })->orWhere('id_parkir', 'like', "%{$this->search}%");
+                    $q2->where('plat_nomor', 'like', "%{$this->search}%")
+                       ->orWhere('id_parkir', 'like', "%{$this->search}%");
                 });
             })
             ->orderBy('waktu_masuk', 'desc')

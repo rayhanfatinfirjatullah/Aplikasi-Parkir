@@ -66,7 +66,7 @@
             @foreach($transaksis as $i => $t)
             <tr>
                 <td class="text-center">{{ $i + 1 }}</td>
-                <td class="font-bold">{{ $t->kendaraan->plat_nomor }}</td>
+                <td class="font-bold">{{ $t->plat_nomor }}</td>
                 <td>{{ ucfirst($t->tarif->jenis_kendaraan) }}</td>
                 <td>{{ $t->areaParkir->nama_area }}</td>
                 <td>{{ $t->waktu_masuk->format('d/m/Y H:i') }}</td>
