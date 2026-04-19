@@ -14,12 +14,12 @@ class TransaksiMasuk extends Component
     public string $plat_nomor = '';
     public string $warna = '';
     public string $pemilik = '';
-    public string $jenis_kendaraan = 'motor';
+    public string $jenis_kendaraan = '';
     public string $id_area = '';
     public string $status_spesial = 'reguler';
 
     protected array $rules = [
-        'plat_nomor' => 'required|string|max:20',
+        'plat_nomor' => ['required', 'string', 'max:20', 'regex:/^[A-Z]{1,2}\s\d{1,4}(?:\s[A-Z]{1,3})?$/'],
         'warna' => 'required|string|max:50',
         'pemilik' => 'required|string|max:255',
         'jenis_kendaraan' => 'required|exists:tb_tarif,jenis_kendaraan',
@@ -29,6 +29,7 @@ class TransaksiMasuk extends Component
     protected array $messages = [
         'plat_nomor.required' => 'Plat nomor wajib diisi',
         'plat_nomor.max' => 'Plat nomor maksimal 20 karakter',
+        'plat_nomor.regex' => 'Format plat nomor tidak valid, minimal harus memiliki kombinasi huruf dan angka (contoh: B 1234 ABC)',
         'warna.required' => 'Warna kendaraan wajib diisi',
         'warna.max' => 'Warna kendaraan maksimal 50 karakter',
         'pemilik.required' => 'Nama pemilik wajib diisi',
@@ -57,6 +58,9 @@ class TransaksiMasuk extends Component
             $this->warna = $kendaraan->warna;
             $this->pemilik = $kendaraan->pemilik;
             $this->status_spesial = $kendaraan->status_spesial;
+            if ($kendaraan->jenis_kendaraan) {
+                $this->jenis_kendaraan = $kendaraan->jenis_kendaraan;
+            }
         } else {
             $this->status_spesial = 'reguler';
         }

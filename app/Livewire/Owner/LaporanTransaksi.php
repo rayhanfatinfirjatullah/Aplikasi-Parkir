@@ -41,8 +41,9 @@ class LaporanTransaksi extends Component
             $query->whereDate('waktu_masuk', '<=', $this->tanggal_selesai);
         }
         if ($this->search) {
-            $query->whereHas('kendaraan', function ($q) {
-                $q->where('plat_nomor', 'like', "%{$this->search}%");
+            $query->where(function($q) {
+                $q->where('plat_nomor', 'like', "%{$this->search}%")
+                  ->orWhere('pemilik', 'like', "%{$this->search}%");
             });
         }
 
