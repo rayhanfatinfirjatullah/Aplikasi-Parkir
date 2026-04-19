@@ -95,7 +95,7 @@ function deleteModalClasses() {
                 </tbody>
             </table>
         </div>
-        <div class="px-6 py-4 border-t border-[#1e293b]">{{ $users->links() }}</div>
+        <div class="px-6 py-4 border-t border-[#1e293b]">{{ $users->links('vendor.livewire.custom-pagination') }}</div>
     </div>
 
     {{-- ── Form Modal (Livewire) ── --}}

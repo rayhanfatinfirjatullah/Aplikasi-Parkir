@@ -6,11 +6,9 @@ use App\Models\Tarif;
 use App\Models\Pengaturan;
 use App\Models\LogAktivitas as LogModel;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 class TarifManagement extends Component
 {
-    use WithPagination;
 
     public string $search = '';
     public bool $showModal = false;

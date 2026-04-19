@@ -87,8 +87,6 @@
         @endforeach
     </div>
 
-    <div class="px-2 py-3">{{ $areas->links() }}</div>
-
     {{-- ── Form Modal ── --}}
     @if($showModal)
     <div class="modal-backdrop">

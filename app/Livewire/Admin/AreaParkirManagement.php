@@ -5,12 +5,8 @@ namespace App\Livewire\Admin;
 use App\Models\AreaParkir;
 use App\Models\LogAktivitas as LogModel;
 use Livewire\Component;
-use Livewire\WithPagination;
-
 class AreaParkirManagement extends Component
 {
-    use WithPagination;
-
     public string $search = '';
     public bool $showModal = false;
     public bool $isEdit = false;
@@ -113,7 +109,7 @@ class AreaParkirManagement extends Component
     {
         $areas = AreaParkir::where('nama_area', 'like', "%{$this->search}%")
             ->orderBy('id_area', 'desc')
-            ->paginate(10);
+            ->get();
 
         return view('livewire.admin.area-parkir-management', compact('areas'))
             ->layout('layouts.app');

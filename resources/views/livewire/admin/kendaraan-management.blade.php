@@ -80,7 +80,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="px-6 py-4 border-t border-[#1e293b]">{{ $kendaraans->links() }}</div>
+        <div class="px-6 py-4 border-t border-[#1e293b]">{{ $kendaraans->links('vendor.livewire.custom-pagination') }}</div>
     </div>
 
     {{-- ── Form Modal ── --}}
