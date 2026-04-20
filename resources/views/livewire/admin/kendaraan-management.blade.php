@@ -100,17 +100,19 @@
                     {{-- Plat Nomor (Alpine.js format logic preserved) --}}
                     <div x-data="{
                         formatPlat(el) {
-                            let val = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                            let clean = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
                             let res = ''; let i = 0;
                             let p1 = '';
-                            while (i < val.length && p1.length < 2 && /[A-Z]/.test(val[i])) { p1 += val[i++]; }
+                            while (i < clean.length && p1.length < 2 && /[A-Z]/.test(clean[i])) { p1 += clean[i++]; }
                             res += p1;
                             let p2 = '';
-                            while (i < val.length && p2.length < 4 && /[0-9]/.test(val[i])) { p2 += val[i++]; }
+                            while (i < clean.length && p2.length < 4 && /[0-9]/.test(clean[i])) { p2 += clean[i++]; }
                             if (p2.length > 0) res += (res.length > 0 ? ' ' : '') + p2;
                             let p3 = '';
-                            while (i < val.length && p3.length < 3 && /[A-Z]/.test(val[i])) { p3 += val[i++]; }
-                            if (p3.length > 0) res += (res.length > 0 ? ' ' : '') + p3;
+                            if (p2.length > 0) {
+                                while (i < clean.length && p3.length < 3 && /[A-Z]/.test(clean[i])) { p3 += clean[i++]; }
+                                if (p3.length > 0) res += ' ' + p3;
+                            }
                             el.value = res;
                         }
                     }">
