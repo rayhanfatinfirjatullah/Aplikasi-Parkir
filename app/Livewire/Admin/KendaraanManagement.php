@@ -105,7 +105,7 @@ class KendaraanManagement extends Component
         ]);
 
         $this->showModal = false;
-        session()->flash('success', 'Data kendaraan berhasil disimpan!');
+        $this->dispatch('toast', type: 'success', message: 'Data kendaraan berhasil disimpan!');
     }
 
     public function delete($id)
@@ -117,7 +117,7 @@ class KendaraanManagement extends Component
             'waktu_aktivitas' => now(),
         ]);
         $kendaraan->delete();
-        session()->flash('success', 'Kendaraan berhasil dihapus!');
+        $this->dispatch('toast', type: 'success', message: 'Kendaraan berhasil dihapus!');
     }
 
     public function render()

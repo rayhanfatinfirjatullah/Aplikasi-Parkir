@@ -91,7 +91,7 @@ class TarifManagement extends Component
         ]);
 
         $this->showModal = false;
-        session()->flash('success', 'Tarif berhasil disimpan!');
+        $this->dispatch('toast', type: 'success', message: 'Tarif berhasil disimpan!');
     }
 
     public function updateDenda()
@@ -112,7 +112,7 @@ class TarifManagement extends Component
             'waktu_aktivitas' => now(),
         ]);
 
-        session()->flash('success', 'Denda karcis hilang berhasil diperbarui!');
+        $this->dispatch('toast', type: 'success', message: 'Denda karcis hilang berhasil diperbarui!');
     }
 
     public function delete($id)
@@ -143,7 +143,7 @@ class TarifManagement extends Component
         }
 
         $tarif->delete();
-        session()->flash('success', 'Tarif berhasil dihapus!');
+        $this->dispatch('toast', type: 'success', message: 'Tarif berhasil dihapus!');
     }
 
     public function render()

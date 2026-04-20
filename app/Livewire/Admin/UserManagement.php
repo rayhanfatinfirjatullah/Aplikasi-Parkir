@@ -114,7 +114,7 @@ class UserManagement extends Component
         $message = $this->isEdit ? 'User berhasil diperbarui!' : 'User berhasil ditambahkan!';
         $this->showModal = false;
         $this->reset(['nama_lengkap', 'username', 'password', 'role', 'status_aktif', 'editId', 'isEdit']);
-        session()->flash('success', $message);
+        $this->dispatch('toast', type: 'success', message: $message);
     }
 
     public function delete($id)
@@ -129,7 +129,7 @@ class UserManagement extends Component
             'waktu_aktivitas' => now(),
         ]);
 
-        session()->flash('success', 'User berhasil dihapus!');
+        $this->dispatch('toast', type: 'success', message: 'User berhasil dihapus!');
     }
 
     public function toggleStatus($id)

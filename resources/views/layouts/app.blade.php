@@ -273,36 +273,7 @@
         {{-- ── Page Content ── --}}
         <main class="flex-1 p-6 md:p-8">
 
-            {{-- Flash Messages --}}
-            @if (session()->has('success'))
-            <div class="alert-success mb-6" role="alert">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span>{{ session('success') }}</span>
-            </div>
-            @endif
-
-            @if (session()->has('error'))
-            <div class="alert-error mb-6" role="alert">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span>{{ session('error') }}</span>
-            </div>
-            @endif
-
-            @if (session()->has('warning'))
-            <div class="alert-warning mb-6" role="alert">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-                <span>{{ session('warning') }}</span>
-            </div>
-            @endif
+            {{-- Global Toasts will appear at top right, handled by Alpine at bottom of layout --}}
 
             {{-- Livewire / Blade slot content --}}
             {{ $slot }}
@@ -361,5 +332,98 @@ document.addEventListener('keydown', function (e) {
     }
 });
 </script>
+    {{-- ===== GLOBAL TOAST NOTIFICATION ===== --}}
+    <div x-data="{ 
+            toasts: [],
+            add(toast) {
+                toast.id = Date.now();
+                this.toasts.push(toast);
+                setTimeout(() => { this.remove(toast.id) }, 4000);
+            },
+            remove(id) {
+                this.toasts = this.toasts.filter(t => t.id !== id);
+            }
+         }"
+         @toast.window="add({ type: $event.detail.type || ($event.detail[0] && $event.detail[0].type), message: $event.detail.message || ($event.detail[0] && $event.detail[0].message) })"
+         x-init="
+            @if(session()->has('success')) add({ type: 'success', message: '{{ session('success') }}' }); @endif
+            @if(session()->has('error')) add({ type: 'error', message: '{{ session('error') }}' }); @endif
+            @if(session()->has('warning')) add({ type: 'warning', message: '{{ session('warning') }}' }); @endif
+         "
+         class="fixed top-6 right-6 z-[100] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+         
+        <template x-for="toast in toasts" :key="toast.id">
+            <div x-show="true"
+                 x-transition:enter="transition ease-out duration-300 transform"
+                 x-transition:enter-start="opacity-0 translate-x-12"
+                 x-transition:enter-end="opacity-100 translate-x-0"
+                 x-transition:leave="transition ease-in duration-200 transform"
+                 x-transition:leave-start="opacity-100 translate-x-0"
+                 x-transition:leave-end="opacity-0 translate-x-12"
+                 :class="{
+                     'bg-[#0F172A]/90 border-emerald-500/30 shadow-[0_0_20px_rgba(52,211,153,0.1)]': toast.type === 'success',
+                     'bg-[#0F172A]/90 border-rose-500/30 shadow-[0_0_20px_rgba(244,63,94,0.15)]': toast.type === 'error',
+                     'bg-[#0F172A]/90 border-amber-500/30 shadow-[0_0_20px_rgba(251,191,36,0.1)]': toast.type === 'warning'
+                 }"
+                 class="relative overflow-hidden pointer-events-auto backdrop-blur-xl border flex items-start gap-3 p-4 rounded-xl"
+                 role="alert">
+
+                {{-- Left color accent border --}}
+                <div class="absolute left-0 top-0 bottom-0 w-1"
+                     :class="{
+                         'bg-emerald-500': toast.type === 'success',
+                         'bg-rose-500': toast.type === 'error',
+                         'bg-amber-500': toast.type === 'warning'
+                     }"></div>
+
+                {{-- Icon --}}
+                <div class="mt-0.5 shrink-0 pl-1">
+                    <template x-if="toast.type === 'success'">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    </template>
+                    <template x-if="toast.type === 'error'">
+                        <div class="w-8 h-8 rounded-full bg-rose-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </div>
+                    </template>
+                    <template x-if="toast.type === 'warning'">
+                        <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                    </template>
+                </div>
+
+                {{-- Message --}}
+                <div class="flex-1 min-w-0 pr-2">
+                    <template x-if="toast.type === 'success'">
+                        <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-0.5">Success</h4>
+                    </template>
+                    <template x-if="toast.type === 'error'">
+                        <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider mb-0.5">Error</h4>
+                    </template>
+                    <template x-if="toast.type === 'warning'">
+                        <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-0.5">Warning</h4>
+                    </template>
+                    <p class="text-sm text-[#e2e8f0] font-medium leading-snug" x-text="toast.message"></p>
+                </div>
+
+                {{-- Close Button --}}
+                <button @click="remove(toast.id)" class="shrink-0 p-1 rounded-md text-[#94a3b8] hover:bg-[#1e293b] hover:text-[#e2e8f0] transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+
+            </div>
+        </template>
+    </div>
 </body>
 </html>

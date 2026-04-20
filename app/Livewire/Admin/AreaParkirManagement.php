@@ -90,7 +90,7 @@ class AreaParkirManagement extends Component
         ]);
 
         $this->showModal = false;
-        session()->flash('success', 'Area parkir berhasil disimpan!');
+        $this->dispatch('toast', type: 'success', message: 'Area parkir berhasil disimpan!');
     }
 
     public function delete($id)
@@ -102,7 +102,7 @@ class AreaParkirManagement extends Component
             'waktu_aktivitas' => now(),
         ]);
         $area->delete();
-        session()->flash('success', 'Area parkir berhasil dihapus!');
+        $this->dispatch('toast', type: 'success', message: 'Area parkir berhasil dihapus!');
     }
 
     public function render()
