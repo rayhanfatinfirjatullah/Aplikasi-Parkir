@@ -8,6 +8,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ asset('img/5.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('img/5.png') }}">
 </head>
 <body class="font-inter antialiased bg-[#020617] text-[#e2e8f0]">
     {{ $slot }}

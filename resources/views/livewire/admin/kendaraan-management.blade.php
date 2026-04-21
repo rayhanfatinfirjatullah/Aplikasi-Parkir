@@ -5,11 +5,31 @@
 
     {{-- ── Toolbar ── --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div class="relative">
+        <div class="relative" x-data="{
+            formatPlat(val) {
+                let clean = val.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                let res = ''; let i = 0;
+                let p1 = '';
+                while (i < clean.length && p1.length < 2 && /[A-Z]/.test(clean[i])) { p1 += clean[i++]; }
+                res += p1;
+                if (p1.length > 0) {
+                    let p2 = '';
+                    while (i < clean.length && p2.length < 4 && /[0-9]/.test(clean[i])) { p2 += clean[i++]; }
+                    if (p2.length > 0) {
+                        res += ' ' + p2;
+                        let p3 = '';
+                        while (i < clean.length && p3.length < 3 && /[A-Z]/.test(clean[i])) { p3 += clean[i++]; }
+                        if (p3.length > 0) res += ' ' + p3;
+                    }
+                }
+                return res;
+            }
+        }">
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
             <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari plat nomor atau pemilik..."
+                   x-on:input="$el.value = formatPlat($el.value)"
                    class="input-base pl-10 w-full sm:w-80">
         </div>
         <button wire:click="openCreate" class="btn-primary">
@@ -99,26 +119,28 @@
                 <div class="space-y-4">
                     {{-- Plat Nomor (Alpine.js format logic preserved) --}}
                     <div x-data="{
-                        formatPlat(el) {
-                            let clean = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                        formatPlat(val) {
+                            let clean = val.toUpperCase().replace(/[^A-Z0-9]/g, '');
                             let res = ''; let i = 0;
                             let p1 = '';
                             while (i < clean.length && p1.length < 2 && /[A-Z]/.test(clean[i])) { p1 += clean[i++]; }
                             res += p1;
-                            let p2 = '';
-                            while (i < clean.length && p2.length < 4 && /[0-9]/.test(clean[i])) { p2 += clean[i++]; }
-                            if (p2.length > 0) res += (res.length > 0 ? ' ' : '') + p2;
-                            let p3 = '';
-                            if (p2.length > 0) {
-                                while (i < clean.length && p3.length < 3 && /[A-Z]/.test(clean[i])) { p3 += clean[i++]; }
-                                if (p3.length > 0) res += ' ' + p3;
+                            if (p1.length > 0) {
+                                let p2 = '';
+                                while (i < clean.length && p2.length < 4 && /[0-9]/.test(clean[i])) { p2 += clean[i++]; }
+                                if (p2.length > 0) {
+                                    res += ' ' + p2;
+                                    let p3 = '';
+                                    while (i < clean.length && p3.length < 3 && /[A-Z]/.test(clean[i])) { p3 += clean[i++]; }
+                                    if (p3.length > 0) res += ' ' + p3;
+                                }
                             }
-                            el.value = res;
+                            return res;
                         }
                     }">
                         <label class="input-label">Plat Nomor</label>
                         <input wire:model="plat_nomor" type="text" placeholder="Contoh: B 1234 ABC"
-                               maxlength="11" x-on:input="formatPlat($el)" oninput="this.value = this.value.toUpperCase()"
+                               maxlength="11" x-on:input="$el.value = formatPlat($el.value)"
                                class="input-base uppercase tracking-widest font-bold text-base @error('plat_nomor') input-error @enderror">
                         @error('plat_nomor') <p class="error-msg">{{ $message }}</p> @enderror
                     </div>
@@ -126,7 +148,7 @@
                     <div>
                         <label class="input-label">Warna</label>
                         <input wire:model="warna" type="text"
-                               x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
+                               x-data x-on:input="$el.value = $el.value.replace(/[^a-zA-Z\s]/g, '').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
                                class="input-base @error('warna') input-error @enderror">
                         @error('warna') <p class="error-msg">{{ $message }}</p> @enderror
                     </div>
@@ -134,7 +156,7 @@
                     <div>
                         <label class="input-label">Pemilik</label>
                         <input wire:model="pemilik" type="text"
-                               x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
+                               x-data x-on:input="$el.value = $el.value.replace(/[^a-zA-Z\s]/g, '').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
                                class="input-base @error('pemilik') input-error @enderror">
                         @error('pemilik') <p class="error-msg">{{ $message }}</p> @enderror
                     </div>

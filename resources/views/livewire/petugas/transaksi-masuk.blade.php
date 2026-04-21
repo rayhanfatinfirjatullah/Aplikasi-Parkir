@@ -37,13 +37,15 @@
                                      let p1 = '';
                                      while (i < clean.length && p1.length < 2 && /[A-Z]/.test(clean[i])) { p1 += clean[i++]; }
                                      res += p1;
-                                     let p2 = '';
-                                     while (i < clean.length && p2.length < 4 && /[0-9]/.test(clean[i])) { p2 += clean[i++]; }
-                                     if (p2.length > 0) res += (res.length > 0 ? ' ' : '') + p2;
-                                     let p3 = '';
-                                     if (p2.length > 0) {
-                                         while (i < clean.length && p3.length < 3 && /[A-Z]/.test(clean[i])) { p3 += clean[i++]; }
-                                         if (p3.length > 0) res += ' ' + p3;
+                                     if (p1.length > 0) {
+                                         let p2 = '';
+                                         while (i < clean.length && p2.length < 4 && /[0-9]/.test(clean[i])) { p2 += clean[i++]; }
+                                         if (p2.length > 0) {
+                                             res += ' ' + p2;
+                                             let p3 = '';
+                                             while (i < clean.length && p3.length < 3 && /[A-Z]/.test(clean[i])) { p3 += clean[i++]; }
+                                             if (p3.length > 0) res += ' ' + p3;
+                                         }
                                      }
                                      return res;
                                  }
@@ -94,11 +96,10 @@
                             @error('plat_nomor') <p class="error-msg">{{ $message }}</p> @enderror
                         </div>
 
-                        {{-- Warna --}}
                         <div>
                             <label class="input-label">Warna Kendaraan</label>
                             <input wire:model="warna" type="text" placeholder="Contoh: Hitam"
-                                   x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
+                                   x-data x-on:input="$el.value = $el.value.replace(/[^a-zA-Z\s]/g, '').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
                                    class="input-base @error('warna') input-error @enderror">
                             @error('warna') <p class="error-msg">{{ $message }}</p> @enderror
                         </div>
@@ -107,7 +108,7 @@
                         <div>
                             <label class="input-label">Pemilik</label>
                             <input wire:model="pemilik" type="text" placeholder="Nama pemilik kendaraan"
-                                   x-data x-on:input="$el.value = $el.value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
+                                   x-data x-on:input="$el.value = $el.value.replace(/[^a-zA-Z\s]/g, '').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')"
                                    class="input-base @error('pemilik') input-error @enderror">
                             @error('pemilik') <p class="error-msg">{{ $message }}</p> @enderror
                         </div>
