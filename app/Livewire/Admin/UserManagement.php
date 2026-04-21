@@ -120,6 +120,12 @@ class UserManagement extends Component
     public function delete($id)
     {
         $user = User::findOrFail($id);
+
+        if ($user->username === 'admin') {
+            $this->dispatch('toast', type: 'error', message: 'Admin utama tidak dapat dihapus!');
+            return;
+        }
+
         $username = $user->username;
         $user->delete();
 
