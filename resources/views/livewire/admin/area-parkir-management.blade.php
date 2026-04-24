@@ -35,11 +35,12 @@
                         <span class="badge badge-blue text-[10px]" title="{{ $area->format_tipe_kendaraan }}">
                             {{ Str::limit($area->format_tipe_kendaraan, 18) }}
                         </span>
-                        <span class="badge text-[10px]
-                            @if($area->level_akses == 'vvip') badge-amber
-                            @elseif($area->level_akses == 'vip') badge-cyan
-                            @else bg-[#1e293b] text-[#94a3b8] border border-[#334155] @endif">
-                            {{ strtoupper($area->level_akses) }}
+                        @php
+                            $statusObj = collect($statuses)->firstWhere('nama_status', $area->level_akses);
+                            $badgeClass = $statusObj && $statusObj->nama_status !== 'reguler' ? 'badge-' . $statusObj->warna_badge : 'bg-[#1e293b] text-[#94a3b8] border border-[#334155]';
+                        @endphp
+                        <span class="badge {{ $badgeClass }} text-[10px]">
+                            {{ $statusObj ? strtoupper($statusObj->label_status) : strtoupper($area->level_akses) }}
                         </span>
                     </div>
                 </div>
@@ -160,9 +161,11 @@
                     <div>
                         <label class="input-label">Level Akses Minimum</label>
                         <select wire:model="level_akses" class="input-base @error('level_akses') input-error @enderror">
-                            <option value="reguler">Reguler</option>
-                            <option value="vip">VIP</option>
-                            <option value="vvip">VVIP</option>
+                            @foreach($statuses as $status)
+                            <option value="{{ $status->nama_status }}">
+                                {{ $status->label_status }} (Min. Level {{ $status->prioritas_level }})
+                            </option>
+                            @endforeach
                         </select>
                         @error('level_akses') <p class="error-msg">{{ $message }}</p> @enderror
                     </div>
@@ -172,6 +175,53 @@
                     <button type="submit" class="btn-primary">Simpan</button>
                 </div>
             </form>
+        </div>
+    </div>
+    @endif
+
+    {{-- ── Capacity Warning Modal ── --}}
+    @if($showCapacityWarning)
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-[#020617]/70 backdrop-blur-sm"
+         x-data="{ show: false }" x-init="setTimeout(() => show = true, 50)">
+        <div class="bg-[#0F172A] border border-[#1e293b] rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 text-center transform transition-all duration-300 relative overflow-hidden"
+             x-show="show"
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4">
+            
+            <!-- Background Glow -->
+            <div class="absolute -top-16 -left-16 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-16 -right-16 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/30 flex items-center justify-center relative shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                <!-- Animate Ping -->
+                <div class="absolute inset-0 rounded-full animate-ping bg-amber-500/30" style="animation-duration: 2s;"></div>
+                <svg class="w-10 h-10 text-amber-400 relative z-10 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            
+            <h3 class="text-xl font-bold text-[#e2e8f0] mb-3">Kapasitas Tidak Valid!</h3>
+            
+            <div class="bg-[#020617]/80 rounded-xl p-4 border border-[#1e293b] mb-6 text-left relative z-10">
+                <p class="text-sm text-[#94a3b8] mb-4 leading-relaxed">
+                    Kapasitas baru (<strong class="text-rose-400">{{ $capacityErrorData['kapasitas_input'] ?? '' }}</strong>) tidak dapat diterapkan pada area <strong class="text-cyan-400">{{ $capacityErrorData['nama_area'] ?? '' }}</strong>. 
+                    Terdapat kendaraan yang sedang parkir melebihi kapasitas yang Anda masukkan.
+                </p>
+                <div class="flex items-center justify-between bg-[#0F172A] rounded-lg p-3.5 border border-[#334155] shadow-inner">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_rgba(251,191,36,0.6)]"></div>
+                        <span class="text-sm font-medium text-[#94a3b8]">Kendaraan Terparkir:</span>
+                    </div>
+                    <span class="text-lg font-black text-amber-400">{{ $capacityErrorData['terisi'] ?? '' }} <span class="text-xs font-normal text-[#94a3b8]">Unit</span></span>
+                </div>
+                <p class="text-[11px] text-[#64748b] mt-3 italic text-center">
+                    *Harap kurangi jumlah kendaraan terparkir terlebih dahulu atau masukkan angka minimal {{ $capacityErrorData['terisi'] ?? '' }}.
+                </p>
+            </div>
+
+            <button type="button" wire:click="closeCapacityWarning" class="btn-primary w-full justify-center shadow-lg shadow-cyan-500/20 py-2.5 text-sm uppercase tracking-wider font-bold">
+                Mengerti & Kembali
+            </button>
         </div>
     </div>
     @endif

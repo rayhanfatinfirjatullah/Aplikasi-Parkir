@@ -6,6 +6,7 @@ use App\Models\Kendaraan;
 use App\Models\Tarif;
 use App\Models\AreaParkir;
 use App\Models\Transaksi;
+use App\Models\StatusKendaraan;
 use App\Models\LogAktivitas;
 use Livewire\Component;
 
@@ -171,8 +172,9 @@ class TransaksiMasuk extends Component
         $registeredVehicles = Kendaraan::whereDoesntHave('transaksi', function ($query) {
             $query->where('status', 'masuk');
         })->get();
+        $statuses = StatusKendaraan::all();
 
-        return view('livewire.petugas.transaksi-masuk', compact('areas', 'tarifs', 'registeredVehicles'))
+        return view('livewire.petugas.transaksi-masuk', compact('areas', 'tarifs', 'registeredVehicles', 'statuses'))
             ->layout('layouts.app');
     }
 }

@@ -81,11 +81,21 @@
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <template x-if="v.status_spesial === 'vvip'">
-                                                        <span class="badge badge-amber text-[10px]">VVIP</span>
-                                                    </template>
-                                                    <template x-if="v.status_spesial === 'vip'">
-                                                        <span class="badge badge-cyan text-[10px]">VIP</span>
+                                                    <template x-if="v.status_spesial !== 'reguler'">
+                                                        <span x-data="{
+                                                            bgMap: {
+                                                                'cyan': 'badge-cyan',
+                                                                'blue': 'badge-blue',
+                                                                'amber': 'badge-amber',
+                                                                'emerald': 'badge-emerald',
+                                                                'rose': 'badge-rose',
+                                                                'slate': 'bg-[#1e293b] text-[#94a3b8] border border-[#334155]'
+                                                            },
+                                                            statusLookup: {{ Js::from($statuses->keyBy('nama_status')) }}
+                                                        }"
+                                                        :class="'badge text-[10px] ' + (bgMap[statusLookup[v.status_spesial]?.warna_badge] || bgMap['slate'])"
+                                                        x-text="(statusLookup[v.status_spesial]?.label_status || v.status_spesial).toUpperCase()">
+                                                        </span>
                                                     </template>
                                                 </div>
                                             </li>

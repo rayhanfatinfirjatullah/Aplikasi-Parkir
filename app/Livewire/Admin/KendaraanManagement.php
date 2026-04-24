@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Kendaraan;
 use App\Models\Tarif;
+use App\Models\StatusKendaraan;
 use App\Models\LogAktivitas as LogModel;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -30,7 +31,7 @@ class KendaraanManagement extends Component
             'plat_nomor' => 'required|string|max:20|' . $uniqueRule,
             'warna' => 'required|string|max:50',
             'pemilik' => 'required|string|max:255',
-            'status_spesial' => 'required|in:reguler,vip,vvip',
+            'status_spesial' => 'required|exists:tb_status_kendaraan,nama_status',
             'jenis_kendaraan' => 'required|exists:tb_tarif,jenis_kendaraan',
         ];
     }
@@ -108,6 +109,57 @@ class KendaraanManagement extends Component
         $this->dispatch('toast', type: 'success', message: 'Data kendaraan berhasil disimpan!');
     }
 
+    // -- Renew Membership --
+    public bool $showRenewModal = false;
+    public ?int $renewId = null;
+    public ?int $renewMonths = null;
+
+    public function openRenew($id)
+    {
+        $kendaraan = Kendaraan::findOrFail($id);
+        $this->renewId = $id;
+        $this->renewMonths = null;
+        $this->showRenewModal = true;
+    }
+
+    public function closeRenewModal()
+    {
+        $this->showRenewModal = false;
+        $this->reset(['renewId', 'renewMonths']);
+        $this->resetValidation();
+    }
+
+    public function processRenew()
+    {
+        $this->validate([
+            'renewMonths' => 'required|integer|min:1|max:12'
+        ]);
+
+        $kendaraan = Kendaraan::findOrFail($this->renewId);
+        
+        $currentExpiry = $kendaraan->masa_aktif_hingga && \Carbon\Carbon::parse($kendaraan->masa_aktif_hingga)->endOfDay()->isFuture() 
+            ? \Carbon\Carbon::parse($kendaraan->masa_aktif_hingga) 
+            : now();
+            
+        $newExpiry = $currentExpiry->addMonths($this->renewMonths);
+        
+        $kendaraan->update([
+            'masa_aktif_hingga' => $newExpiry->format('Y-m-d')
+        ]);
+
+        $statusModel = \App\Models\StatusKendaraan::where('nama_status', $kendaraan->status_spesial)->first();
+        $cost = $statusModel ? $statusModel->nominal_tarif * $this->renewMonths : 0;
+
+        LogModel::create([
+            'id_user' => auth()->user()->id_user,
+            'aktivitas' => "Perpanjang Membership: {$kendaraan->plat_nomor} selama {$this->renewMonths} bulan (Rp " . number_format($cost, 0, ',', '.') . ")",
+            'waktu_aktivitas' => now(),
+        ]);
+
+        $this->closeRenewModal();
+        $this->dispatch('toast', type: 'success', message: 'Membership ' . $kendaraan->plat_nomor . ' berhasil diperpanjang hingga ' . $newExpiry->format('d/m/Y') . '!');
+    }
+
     public function delete($id)
     {
         $kendaraan = Kendaraan::findOrFail($id);
@@ -128,8 +180,9 @@ class KendaraanManagement extends Component
         })->orderBy('id_kendaraan', 'desc')->paginate(10);
 
         $tarifs = Tarif::all();
+        $statuses = StatusKendaraan::orderBy('prioritas_level')->get();
 
-        return view('livewire.admin.kendaraan-management', compact('kendaraans', 'tarifs'))
+        return view('livewire.admin.kendaraan-management', compact('kendaraans', 'tarifs', 'statuses'))
             ->layout('layouts.app');
     }
 }

@@ -39,10 +39,11 @@
                         <td>
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span class="font-bold tracking-widest text-[#e2e8f0]">{{ $t->plat_nomor }}</span>
-                                @if(($t->status_spesial ?? 'reguler') === 'vvip')
-                                <span class="badge badge-amber text-[10px]">VVIP</span>
-                                @elseif(($t->status_spesial ?? 'reguler') === 'vip')
-                                <span class="badge badge-cyan text-[10px]">VIP</span>
+                                @php
+                                    $statusObj = collect($statuses)->firstWhere('nama_status', $t->status_spesial ?? 'reguler');
+                                @endphp
+                                @if($statusObj && $statusObj->nama_status !== 'reguler')
+                                <span class="badge badge-{{ $statusObj->warna_badge }} text-[10px]">{{ $statusObj->label_status }}</span>
                                 @endif
                             </div>
                         </td>
@@ -112,10 +113,11 @@
                     <span class="text-sm text-[#94a3b8]">Plat Nomor</span>
                     <div class="flex items-center gap-2">
                         <span class="font-bold text-[#e2e8f0] tracking-wider">{{ $checkoutData['plat_nomor'] }}</span>
-                        @if(($checkoutData['status_spesial'] ?? 'reguler') === 'vvip')
-                        <span class="badge badge-amber text-[10px]">VVIP</span>
-                        @elseif(($checkoutData['status_spesial'] ?? 'reguler') === 'vip')
-                        <span class="badge badge-cyan text-[10px]">VIP</span>
+                        @php
+                            $statusObjCheckout = collect($statuses)->firstWhere('nama_status', $checkoutData['status_spesial'] ?? 'reguler');
+                        @endphp
+                        @if($statusObjCheckout && $statusObjCheckout->nama_status !== 'reguler')
+                        <span class="badge badge-{{ $statusObjCheckout->warna_badge }} text-[10px]">{{ $statusObjCheckout->label_status }}</span>
                         @endif
                     </div>
                 </div>
@@ -143,12 +145,17 @@
                     <span class="text-sm text-[#94a3b8]">Tarif/Jam</span>
                     <span class="text-sm text-[#e2e8f0] tabular-nums">Rp {{ number_format($checkoutData['tarif_per_jam'], 0, ',', '.') }}</span>
                 </div>
-                <div class="flex justify-between py-2.5 border-b border-[#1e293b]">
+                <div class="flex justify-between py-2.5 border-b border-[#1e293b] items-center">
                     <span class="text-sm text-[#94a3b8]">Biaya Parkir</span>
-                    @if($checkoutData['is_free_parkir'] ?? false)
-                    <span class="text-sm font-bold text-emerald-400">GRATIS (Rp 0)</span>
+                    @if($checkoutData['is_membership_expired'] ?? false)
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-[#F43F5E] block mb-0.5">Membership Expired (Tarif Reguler)</span>
+                            <span class="text-sm text-[#e2e8f0] tabular-nums">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
+                        </div>
+                    @elseif(isset($checkoutData['metode_tarif']) && $checkoutData['metode_tarif'] !== 'reguler' && $checkoutData['biaya_parkir'] == 0)
+                        <span class="text-sm font-bold text-emerald-400">BEBAS BIAYA (Rp 0)</span>
                     @else
-                    <span class="text-sm text-[#e2e8f0] tabular-nums">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
+                        <span class="text-sm text-[#e2e8f0] tabular-nums">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
                     @endif
                 </div>
 
@@ -159,7 +166,7 @@
                         <svg class="w-4 h-4 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span class="text-xs font-medium text-amber-400">VVIP — Kebal Denda Karcis Hilang</span>
+                        <span class="text-xs font-medium text-amber-400">Kebal Denda Karcis Hilang (Hak Spesial)</span>
                     </div>
                 </div>
                 @else

@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\AreaParkir;
+use App\Models\StatusKendaraan;
 use App\Models\LogAktivitas as LogModel;
 use Livewire\Component;
 class AreaParkirManagement extends Component
@@ -11,6 +12,8 @@ class AreaParkirManagement extends Component
     public bool $showModal = false;
     public bool $isEdit = false;
     public ?int $editId = null;
+    public bool $showCapacityWarning = false;
+    public array $capacityErrorData = [];
 
     public string $nama_area = '';
     public string $kapasitas = '';
@@ -21,7 +24,7 @@ class AreaParkirManagement extends Component
         'nama_area' => 'required|string|max:255',
         'kapasitas' => 'required|integer|min:1',
         'tipe_kendaraan' => 'required|array|min:1',
-        'level_akses' => 'required|in:reguler,vip,vvip',
+        'level_akses' => 'required|exists:tb_status_kendaraan,nama_status',
     ];
 
     protected array $messages = [
@@ -63,6 +66,11 @@ class AreaParkirManagement extends Component
         $this->showModal = false;
     }
 
+    public function closeCapacityWarning()
+    {
+        $this->showCapacityWarning = false;
+    }
+
     public function save()
     {
         $this->validate();
@@ -75,6 +83,18 @@ class AreaParkirManagement extends Component
         ];
 
         if ($this->isEdit) {
+            $area = AreaParkir::findOrFail($this->editId);
+            
+            if ((int)$this->kapasitas < $area->terisi) {
+                $this->capacityErrorData = [
+                    'nama_area' => $area->nama_area,
+                    'terisi' => $area->terisi,
+                    'kapasitas_input' => $this->kapasitas
+                ];
+                $this->showCapacityWarning = true;
+                return;
+            }
+
             AreaParkir::where('id_area', $this->editId)->update($data);
             $aktivitas = "Mengubah area parkir: {$this->nama_area}";
         } else {
@@ -110,8 +130,9 @@ class AreaParkirManagement extends Component
         $areas = AreaParkir::where('nama_area', 'like', "%{$this->search}%")
             ->orderBy('id_area', 'desc')
             ->get();
+        $statuses = StatusKendaraan::orderBy('prioritas_level')->get();
 
-        return view('livewire.admin.area-parkir-management', compact('areas'))
+        return view('livewire.admin.area-parkir-management', compact('areas', 'statuses'))
             ->layout('layouts.app');
     }
 }
