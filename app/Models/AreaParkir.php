@@ -57,11 +57,12 @@ class AreaParkir extends Model
     public function canAccessByPrivilege(string $statusSpesial): bool
     {
         $statusSpesial = strtolower($statusSpesial);
-        // Mapping hirarki akses
-        $levelValue = ['reguler' => 1, 'vip' => 2, 'vvip' => 3];
         
-        $kendaraanLevel = $levelValue[$statusSpesial] ?? 1;
-        $areaLevel = $levelValue[$this->level_akses] ?? 1;
+        $areaLevelModel = \App\Models\StatusKendaraan::where('nama_status', $this->level_akses)->first();
+        $areaLevel = $areaLevelModel ? $areaLevelModel->prioritas_level : 1;
+
+        $kendaraanLevelModel = \App\Models\StatusKendaraan::where('nama_status', $statusSpesial)->first();
+        $kendaraanLevel = $kendaraanLevelModel ? $kendaraanLevelModel->prioritas_level : 1;
 
         return $kendaraanLevel >= $areaLevel;
     }

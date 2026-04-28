@@ -16,22 +16,37 @@ class Kendaraan extends Model
         'pemilik',
         'status_spesial',
         'jenis_kendaraan',
+        'masa_aktif_hingga',
     ];
 
-    /**
-     * Check if vehicle is VIP or VVIP (free parking).
-     */
-    public function isFreeParkir(): bool
+    protected function casts(): array
     {
-        return in_array($this->status_spesial, ['vip', 'vvip']);
+        return [
+            'masa_aktif_hingga' => 'date',
+        ];
     }
 
     /**
-     * Check if vehicle is immune to denda (VVIP only).
+     * Get the billing setup for this vehicle based on its dynamic status.
+     */
+    public function getStatusModel()
+    {
+        return \App\Models\StatusKendaraan::where('nama_status', $this->status_spesial)->first();
+    }
+
+    public function isMembershipActive(): bool
+    {
+        if (!$this->masa_aktif_hingga) return false;
+        return $this->masa_aktif_hingga->endOfDay()->isFuture() || $this->masa_aktif_hingga->isToday();
+    }
+
+    /**
+     * Check if vehicle is immune to denda based on dynamic status.
      */
     public function isImmuneDenda(): bool
     {
-        return $this->status_spesial === 'vvip';
+        $statusModel = \App\Models\StatusKendaraan::where('nama_status', $this->status_spesial)->first();
+        return $statusModel ? $statusModel->is_bebas_denda : false;
     }
 
     public function transaksi(): HasMany

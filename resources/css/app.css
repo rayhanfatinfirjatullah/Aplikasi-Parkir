@@ -1,5 +1,238 @@
 @import "tailwindcss";
 
+/* ============================================================
+   INTEGRAPARK — GLOBAL DESIGN SYSTEM (Tailwind CSS v4)
+   Professional Enterprise Dark Mode
+   ============================================================ */
+
 @theme {
+    /* --- Typography --- */
     --font-inter: "Inter", sans-serif;
+
+    /* --- Brand Color Palette --- */
+
+    /* Base Backgrounds */
+    --color-brand-bg:      #020617; /* Slate-950 — deepest background */
+    --color-brand-surface: #0F172A; /* Slate-900 — cards, sidebar, modals */
+    --color-brand-border:  #1e293b; /* Slate-800 — borders & dividers */
+    --color-brand-muted:   #334155; /* Slate-700 — muted borders / zebra */
+
+    /* Primary Accent — Cyan (matches "PARK" logo text) */
+    --color-brand-cyan:    #22D3EE; /* Cyan-400 */
+    --color-brand-cyan-dk: #06B6D4; /* Cyan-500 — darker for gradients */
+
+    /* Secondary Action — Blue */
+    --color-brand-blue:    #2563EB; /* Blue-600 */
+
+    /* Semantic States */
+    --color-brand-success: #34D399; /* Emerald-400 */
+    --color-brand-warning: #FBBF24; /* Amber-400 */
+    --color-brand-error:   #F43F5E; /* Rose-500 */
+
+    /* Text Scale */
+    --color-brand-text:    #e2e8f0; /* Slate-200 — primary text */
+    --color-brand-label:   #94a3b8; /* Slate-400 — muted/secondary text */
+}
+
+/* ============================================================
+   BASE LAYER — Applied Globally
+   ============================================================ */
+@layer base {
+    /* Force dark mode on the entire app */
+    html {
+        color-scheme: dark;
+    }
+
+    body {
+        @apply antialiased bg-[#020617] text-[#e2e8f0];
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Custom thin scrollbar (webkit) */
+    ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #1e293b;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #22D3EE;
+    }
+}
+
+/* ============================================================
+   COMPONENT LAYER — Reusable Design Primitives
+   ============================================================ */
+@layer components {
+
+    /* --- Cards & Surfaces --- */
+    .card {
+        @apply bg-[#0F172A] border border-[#1e293b] rounded-2xl shadow-2xl;
+    }
+
+    /* --- Form Inputs --- */
+    .input-base {
+        @apply w-full bg-[#020617] border border-[#334155] text-[#e2e8f0]
+               rounded-xl px-4 py-2.5 text-sm
+               placeholder:text-[#94a3b8]
+               focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+               transition-all duration-200;
+    }
+
+    .input-error {
+        @apply border-rose-500 focus:border-rose-500 focus:ring-rose-500/20;
+    }
+
+    .input-label {
+        @apply block text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-1.5;
+    }
+
+    .error-msg {
+        @apply mt-1.5 text-xs text-rose-400 flex items-center gap-1;
+    }
+
+    /* --- Primary Button (Cyan → Blue gradient with glow) --- */
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2
+               px-5 py-2.5 rounded-xl text-sm font-bold text-white
+               bg-gradient-to-r from-cyan-500 to-blue-600
+               shadow-lg shadow-cyan-500/20
+               hover:from-cyan-400 hover:to-blue-500
+               hover:shadow-cyan-500/40
+               active:scale-[0.97]
+               transition-all duration-200 cursor-pointer;
+    }
+
+    /* --- Secondary / Ghost Button --- */
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2
+               px-5 py-2.5 rounded-xl text-sm font-medium text-[#94a3b8]
+               bg-transparent border border-[#1e293b]
+               hover:bg-[#1e293b] hover:text-[#e2e8f0]
+               active:scale-[0.97]
+               transition-all duration-200 cursor-pointer;
+    }
+
+    /* --- Danger Button --- */
+    .btn-danger {
+        @apply inline-flex items-center justify-center gap-2
+               px-5 py-2.5 rounded-xl text-sm font-bold text-white
+               bg-rose-600 hover:bg-rose-500
+               shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40
+               active:scale-[0.97]
+               transition-all duration-200 cursor-pointer;
+    }
+
+    /* --- Table Styles --- */
+    .table-base {
+        @apply w-full text-sm text-left;
+    }
+    .table-base thead tr {
+        @apply bg-[#1e293b] text-[#94a3b8] text-xs uppercase tracking-wider;
+    }
+    .table-base thead th {
+        @apply px-4 py-3 font-semibold first:rounded-tl-xl last:rounded-tr-xl;
+    }
+    .table-base tbody tr {
+        @apply border-t border-[#1e293b] hover:bg-[#1e293b]/50 transition-colors duration-150;
+    }
+    .table-base tbody tr:nth-child(even) {
+        @apply bg-[#0F172A]/50;
+    }
+    .table-base tbody td {
+        @apply px-4 py-3 text-[#e2e8f0];
+    }
+
+    /* --- Sidebar Nav Link Active State --- */
+    .nav-active {
+        @apply !bg-[#1e293b] !text-cyan-400 !border-l-4 !border-cyan-400 !pl-[calc(0.75rem-4px)];
+    }
+
+    /* --- Modal Backdrop --- */
+    .modal-backdrop {
+        @apply fixed inset-0 z-50 flex items-center justify-center
+               bg-[#020617]/70 backdrop-blur-sm;
+    }
+
+    .modal-box {
+        @apply bg-[#0F172A] border border-[#1e293b] rounded-2xl shadow-2xl
+               w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto;
+    }
+
+    /* --- Badge / Status Pill --- */
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+    }
+    .badge-cyan    { @apply bg-cyan-500/15 text-cyan-400 border border-cyan-500/30; }
+    .badge-blue    { @apply bg-blue-500/15 text-blue-400 border border-blue-500/30; }
+    .badge-emerald { @apply bg-emerald-500/15 text-emerald-400 border border-emerald-500/30; }
+    .badge-amber   { @apply bg-amber-500/15 text-amber-400 border border-amber-500/30; }
+    .badge-rose    { @apply bg-rose-500/15 text-rose-400 border border-rose-500/30; }
+    .badge-slate   { @apply bg-[#1e293b] text-[#94a3b8] border border-[#334155]; }
+
+    /* --- Section Divider Label --- */
+    .nav-section-label {
+        @apply px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em];
+    }
+
+    /* --- Stat Card Number --- */
+    .stat-number {
+        @apply text-4xl font-extrabold tracking-tight text-[#e2e8f0];
+    }
+
+    /* --- Flash / Alert Banners --- */
+    .alert-success {
+        @apply flex items-center gap-3 px-4 py-3 rounded-xl
+               bg-emerald-500/10 border border-emerald-500/30
+               text-emerald-400 text-sm;
+    }
+    .alert-error {
+        @apply flex items-center gap-3 px-4 py-3 rounded-xl
+               bg-rose-500/10 border border-rose-500/30
+               text-rose-400 text-sm
+               shadow-[0_0_20px_rgba(244,63,94,0.15)];
+    }
+    .alert-warning {
+        @apply flex items-center gap-3 px-4 py-3 rounded-xl
+               bg-amber-500/10 border border-amber-500/30
+               text-amber-400 text-sm;
+    }
+
+    /* --- Progress Bar (Parking Capacity Indicator) --- */
+    .progress-track {
+        @apply w-full h-2 bg-[#1e293b] rounded-full overflow-hidden;
+    }
+    .progress-fill-ok      { @apply h-full rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all duration-500; }
+    .progress-fill-warning { @apply h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-500; }
+    .progress-fill-full    { @apply h-full rounded-full bg-gradient-to-r from-rose-600 to-rose-500 transition-all duration-500; }
+}
+
+/* ============================================================
+   UTILITIES LAYER — One-off helpers
+   ============================================================ */
+@layer utilities {
+    /* Cyan glow text for headings / logo */
+    .text-glow-cyan {
+        text-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+    }
+
+    /* Error field glow */
+    .glow-error {
+        box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2);
+    }
+
+    /* Subtle brand gradient background for hero areas */
+    .bg-brand-gradient {
+        background: linear-gradient(135deg, #020617 0%, #0c1428 50%, #020617 100%);
+    }
+
+    /* Sidebar collapsed state helper */
+    .sidebar-collapsed {
+        transform: translateX(-100%);
+    }
 }

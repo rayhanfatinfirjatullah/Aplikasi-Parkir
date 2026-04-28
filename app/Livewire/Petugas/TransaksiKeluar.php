@@ -3,6 +3,7 @@
 namespace App\Livewire\Petugas;
 
 use App\Models\Transaksi;
+use App\Models\StatusKendaraan;
 use App\Models\LogAktivitas;
 use App\Models\Pengaturan;
 use Livewire\Component;
@@ -37,16 +38,41 @@ class TransaksiKeluar extends Component
         $waktuMasuk = Carbon::parse($transaksi->waktu_masuk);
         $durasiJam = max(1, (int) ceil($waktuMasuk->diffInMinutes($waktuKeluar) / 60));
         $statusSpesial = $transaksi->status_spesial ?? 'reguler';
-        $isFreeParkir = in_array($statusSpesial, ['vip', 'vvip']);
-        $isImmuneDenda = $statusSpesial === 'vvip';
-        $biayaParkir = $isFreeParkir ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
+        $statusModel = StatusKendaraan::where('nama_status', $statusSpesial)->first();
+        
+        $metodeTarif = $statusModel ? $statusModel->metode_tarif : 'reguler';
+        $nominalTarif = $statusModel ? (float) $statusModel->nominal_tarif : 0;
+        $isImmuneDenda = $statusModel ? $statusModel->is_bebas_denda : false;
+        
+        $biayaParkir = 0;
+        $isMembershipExpired = false;
+
+        if ($metodeTarif === 'reguler') {
+            $biayaParkir = $durasiJam * $transaksi->tarif->tarif_per_jam;
+        } elseif ($metodeTarif === 'fix_per_hari') {
+            $hasPaidToday = Transaksi::where('plat_nomor', $transaksi->plat_nomor)
+                ->where('status', 'keluar')
+                ->whereDate('waktu_keluar', today())
+                ->where('biaya_parkir', '>', 0)
+                ->exists();
+            $biayaParkir = $hasPaidToday ? 0 : $nominalTarif;
+        } elseif ($metodeTarif === 'membership') {
+            if ($transaksi->kendaraan && $transaksi->kendaraan->isMembershipActive()) {
+                $biayaParkir = 0;
+            } else {
+                $isMembershipExpired = true;
+                $biayaParkir = $durasiJam * $transaksi->tarif->tarif_per_jam;
+                $this->dispatch('toast', type: 'error', message: 'Membership Kadaluwarsa - Gunakan Tarif Reguler');
+            }
+        }
 
         $this->checkoutData = [
             'id_parkir' => $transaksi->id_parkir,
             'plat_nomor' => $transaksi->plat_nomor,
             'warna' => $transaksi->warna,
             'status_spesial' => $statusSpesial,
-            'is_free_parkir' => $isFreeParkir,
+            'metode_tarif' => $metodeTarif,
+            'is_membership_expired' => $isMembershipExpired,
             'is_immune_denda' => $isImmuneDenda,
             'pemilik' => $transaksi->pemilik,
             'jenis_kendaraan' => ucfirst($transaksi->tarif->jenis_kendaraan),
@@ -80,15 +106,37 @@ class TransaksiKeluar extends Component
     {
         if (!$this->checkoutData) return;
 
-        $transaksi = Transaksi::with(['areaParkir', 'tarif'])->findOrFail($this->checkoutData['id_parkir']);
+        $transaksi = Transaksi::with(['areaParkir', 'tarif', 'kendaraan'])->findOrFail($this->checkoutData['id_parkir']);
 
         $waktuKeluar = now();
         $waktuMasuk = Carbon::parse($transaksi->waktu_masuk);
         $durasiJam = max(1, (int) ceil($waktuMasuk->diffInMinutes($waktuKeluar) / 60));
         $statusSpesial = $transaksi->status_spesial ?? 'reguler';
-        $isFreeParkir = in_array($statusSpesial, ['vip', 'vvip']);
-        $isImmuneDenda = $statusSpesial === 'vvip';
-        $biayaParkir = $isFreeParkir ? 0 : ($durasiJam * $transaksi->tarif->tarif_per_jam);
+        $statusModel = StatusKendaraan::where('nama_status', $statusSpesial)->first();
+        
+        $metodeTarif = $statusModel ? $statusModel->metode_tarif : 'reguler';
+        $nominalTarif = $statusModel ? (float) $statusModel->nominal_tarif : 0;
+        $isImmuneDenda = $statusModel ? $statusModel->is_bebas_denda : false;
+        
+        $biayaParkir = 0;
+
+        if ($metodeTarif === 'reguler') {
+            $biayaParkir = $durasiJam * $transaksi->tarif->tarif_per_jam;
+        } elseif ($metodeTarif === 'fix_per_hari') {
+            $hasPaidToday = Transaksi::where('plat_nomor', $transaksi->plat_nomor)
+                ->where('status', 'keluar')
+                ->whereDate('waktu_keluar', today())
+                ->where('biaya_parkir', '>', 0)
+                ->exists();
+            $biayaParkir = $hasPaidToday ? 0 : $nominalTarif;
+        } elseif ($metodeTarif === 'membership') {
+            if ($transaksi->kendaraan && $transaksi->kendaraan->isMembershipActive()) {
+                $biayaParkir = 0;
+            } else {
+                $biayaParkir = $durasiJam * $transaksi->tarif->tarif_per_jam;
+            }
+        }
+        
         $denda = ($this->isKarcisHilang && !$isImmuneDenda) ? $this->nilaiDenda : 0;
         $biayaTotal = $biayaParkir + $denda;
 
@@ -96,6 +144,7 @@ class TransaksiKeluar extends Component
             'waktu_keluar' => $waktuKeluar,
             'durasi_jam' => $durasiJam,
             'biaya_total' => $biayaTotal,
+            'biaya_parkir' => $biayaParkir,
             'denda' => $denda,
             'status' => 'keluar',
         ]);
@@ -134,7 +183,8 @@ class TransaksiKeluar extends Component
             ->orderBy('waktu_masuk', 'desc')
             ->paginate(10);
 
-        return view('livewire.petugas.transaksi-keluar', compact('transaksis'))
+        $statuses = StatusKendaraan::all();
+        return view('livewire.petugas.transaksi-keluar', compact('transaksis', 'statuses'))
             ->layout('layouts.app');
     }
 }

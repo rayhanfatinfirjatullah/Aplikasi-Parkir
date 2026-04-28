@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
 
         Tarif::create([
             'jenis_kendaraan' => 'lainnya',
-            'tarif_per_jam' => 3000,
+            'tarif_per_jam' => 7000,
         ]);
 
         // Seed Area Parkir
@@ -76,6 +76,14 @@ class DatabaseSeeder extends Seeder
             'kapasitas' => 75,
             'terisi' => 0,
             'tipe_kendaraan' => 'mobil',
+            'level_akses' => 'reguler',
+        ]);
+
+        AreaParkir::create([
+            'nama_area' => 'Logistik',
+            'kapasitas' => 25,
+            'terisi' => 0,
+            'tipe_kendaraan' => 'lainnya',
             'level_akses' => 'reguler',
         ]);
 
