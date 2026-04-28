@@ -15,6 +15,14 @@ class DatabaseSeeder extends Seeder
     {
         // Seed Users with explicit Hash::make()
         User::create([
+            'nama_lengkap' => 'Super Administrator',
+            'username' => 'superadmin',
+            'password' => Hash::make('superadmin123'),
+            'role' => 'superadmin',
+            'status_aktif' => 1,
+        ]);
+
+        User::create([
             'nama_lengkap' => 'Administrator',
             'username' => 'admin',
             'password' => Hash::make('admin123'),

@@ -30,7 +30,7 @@ class UserManagement extends Component
             'nama_lengkap' => 'required|string|max:255',
             'username' => 'required|string|max:255|' . $uniqueRule,
             'password' => $this->isEdit ? 'nullable|string|min:6' : 'required|string|min:6',
-            'role' => 'required|in:admin,petugas,owner',
+            'role' => 'required|in:superadmin,admin,petugas,owner',
             'status_aktif' => 'required|in:0,1',
         ];
     }
@@ -120,6 +120,12 @@ class UserManagement extends Component
     public function delete($id)
     {
         $user = User::findOrFail($id);
+        
+        if ($user->role === 'superadmin') {
+            session()->flash('error', 'Super Admin tidak dapat dihapus!');
+            return;
+        }
+
         $username = $user->username;
         $user->delete();
 
