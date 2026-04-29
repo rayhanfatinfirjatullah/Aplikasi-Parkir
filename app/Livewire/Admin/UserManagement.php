@@ -121,8 +121,8 @@ class UserManagement extends Component
     {
         $user = User::findOrFail($id);
 
-        if ($user->username === 'admin') {
-            $this->dispatch('toast', type: 'error', message: 'Admin utama tidak dapat dihapus!');
+        if ($user->role === 'superadmin') {
+            $this->dispatch('toast', type: 'error', message: 'Super Admin tidak dapat dihapus!');
             return;
         }
 

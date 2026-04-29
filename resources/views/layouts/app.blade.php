@@ -49,7 +49,8 @@
                 {{-- Avatar with role-colored ring --}}
                 <div class="relative shrink-0">
                     <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-[#020617]
-                                @if(auth()->user()->role === 'admin') bg-cyan-400
+                                @if(auth()->user()->role === 'superadmin') bg-violet-400
+                                @elseif(auth()->user()->role === 'admin') bg-cyan-400
                                 @elseif(auth()->user()->role === 'petugas') bg-emerald-400
                                 @else bg-amber-400 @endif">
                         {{ strtoupper(substr(auth()->user()->nama_lengkap, 0, 1)) }}
@@ -60,10 +61,11 @@
                 <div class="min-w-0">
                     <p class="text-sm font-semibold text-[#e2e8f0] truncate">{{ auth()->user()->nama_lengkap }}</p>
                     <span class="badge mt-0.5
-                        @if(auth()->user()->role === 'admin') badge-cyan
+                        @if(auth()->user()->role === 'superadmin') badge-violet
+                        @elseif(auth()->user()->role === 'admin') badge-cyan
                         @elseif(auth()->user()->role === 'petugas') badge-emerald
                         @else badge-amber @endif">
-                        {{ ucfirst(auth()->user()->role) }}
+                        {{ auth()->user()->role === 'superadmin' ? 'Super Admin' : ucfirst(auth()->user()->role) }}
                     </span>
                 </div>
             </div>

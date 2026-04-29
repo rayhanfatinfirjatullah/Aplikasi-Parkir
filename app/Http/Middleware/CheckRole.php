@@ -14,6 +14,10 @@ class CheckRole
             return redirect()->route('login');
         }
 
+        if (auth()->user()->role === 'superadmin') {
+            return $next($request);
+        }
+
         if (!in_array(auth()->user()->role, $roles)) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
