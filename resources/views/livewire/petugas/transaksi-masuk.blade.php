@@ -139,7 +139,7 @@
                             },
                             get selectedLabel() {
                                 if (this.selectedTarif) {
-                                    return this.selectedTarif.jenis_kendaraan.charAt(0).toUpperCase() + this.selectedTarif.jenis_kendaraan.slice(1) + ' — Rp ' + new Intl.NumberFormat('id-ID').format(this.selectedTarif.tarif_per_jam) + '/jam';
+                                    return this.selectedTarif.jenis_kendaraan.charAt(0).toUpperCase() + this.selectedTarif.jenis_kendaraan.slice(1) + ' — Rp ' + new Intl.NumberFormat('id-ID').format(this.selectedTarif.tarif_jam_pertama) + '/jam';
                                 }
                                 return 'Pilih Jenis Kendaraan';
                             },
@@ -202,7 +202,7 @@
                                                        :class="jenis === t.jenis_kendaraan ? 'text-cyan-300' : 'text-[#e2e8f0]'"
                                                        x-text="t.jenis_kendaraan"></p>
                                                     <p class="text-xs text-[#94a3b8] font-medium mt-0.5 font-mono"
-                                                       x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(t.tarif_per_jam) + '/jam'"></p>
+                                                       x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(t.tarif_jam_pertama) + '/jam'"></p>
                                                 </div>
                                                 <div x-show="jenis === t.jenis_kendaraan" class="text-cyan-400 shrink-0">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

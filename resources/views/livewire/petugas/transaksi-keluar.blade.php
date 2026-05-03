@@ -51,8 +51,14 @@
                         <td class="text-[#94a3b8]">{{ $t->areaParkir->nama_area }}</td>
                         <td class="font-mono tabular-nums text-xs text-[#94a3b8]">{{ $t->waktu_masuk->format('d/m/Y H:i') }}</td>
                         <td>
-                            @php $durasi = max(1, (int) ceil($t->waktu_masuk->diffInMinutes(now()) / 60)); @endphp
-                            <span class="badge badge-amber">{{ $durasi }} jam</span>
+                            @php
+                                $mnt  = (int) floor($t->waktu_masuk->diffInSeconds(now()) / 60);
+                                $jam  = (int) floor($mnt / 60);
+                                $sisa = $mnt % 60;
+                            @endphp
+                            <span class="badge badge-amber">
+                                {{ $jam > 0 ? $jam . 'j ' : '' }}{{ $sisa }}m
+                            </span>
                         </td>
                         <td class="text-center">
                             <button wire:click="openCheckout({{ $t->id_parkir }})"
@@ -87,7 +93,7 @@
     {{-- ── Checkout Modal ── --}}
     @if($showCheckout && $checkoutData)
     <div class="modal-backdrop">
-        <div class="modal-box p-6">
+        <div class="modal-box p-6 max-w-lg">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-bold text-[#e2e8f0]">Konfirmasi Check-out</h3>
                 <button wire:click="$set('showCheckout', false)"
@@ -98,17 +104,9 @@
                 </button>
             </div>
 
-            <div class="space-y-0 mb-6">
-                {{-- Detail rows --}}
-                @php
-                    $rows = [
-                        ['Plat Nomor', null, 'plat_nomor'],
-                        ['Jenis Kendaraan', null, 'jenis_kendaraan'],
-                        ['Area', null, 'area'],
-                        ['Waktu Masuk', null, 'waktu_masuk'],
-                        ['Waktu Keluar', null, 'waktu_keluar'],
-                    ];
-                @endphp
+            <div class="space-y-0 mb-5">
+
+                {{-- ── Data Kendaraan ── --}}
                 <div class="flex justify-between items-center py-2.5 border-b border-[#1e293b]">
                     <span class="text-sm text-[#94a3b8]">Plat Nomor</span>
                     <div class="flex items-center gap-2">
@@ -126,7 +124,7 @@
                     <span class="text-sm text-[#e2e8f0]">{{ $checkoutData['jenis_kendaraan'] }}</span>
                 </div>
                 <div class="flex justify-between py-2.5 border-b border-[#1e293b]">
-                    <span class="text-sm text-[#94a3b8]">Area</span>
+                    <span class="text-sm text-[#94a3b8]">Area Parkir</span>
                     <span class="text-sm text-[#e2e8f0]">{{ $checkoutData['area'] }}</span>
                 </div>
                 <div class="flex justify-between py-2.5 border-b border-[#1e293b]">
@@ -137,29 +135,76 @@
                     <span class="text-sm text-[#94a3b8]">Waktu Keluar</span>
                     <span class="text-sm font-mono text-[#e2e8f0]">{{ $checkoutData['waktu_keluar'] }}</span>
                 </div>
+
+                {{-- ── Durasi ── --}}
                 <div class="flex justify-between py-2.5 border-b border-[#1e293b]">
-                    <span class="text-sm text-[#94a3b8]">Durasi</span>
-                    <span class="text-sm font-bold text-amber-400">{{ $checkoutData['durasi_jam'] }} jam</span>
+                    <span class="text-sm text-[#94a3b8]">Durasi Parkir</span>
+                    <span class="text-sm font-bold text-amber-400">
+                        {{ $checkoutData['durasi_label'] }}
+                    </span>
                 </div>
-                <div class="flex justify-between py-2.5 border-b border-[#1e293b]">
-                    <span class="text-sm text-[#94a3b8]">Tarif/Jam</span>
-                    <span class="text-sm text-[#e2e8f0] tabular-nums">Rp {{ number_format($checkoutData['tarif_per_jam'], 0, ',', '.') }}</span>
-                </div>
-                <div class="flex justify-between py-2.5 border-b border-[#1e293b] items-center">
-                    <span class="text-sm text-[#94a3b8]">Biaya Parkir</span>
-                    @if($checkoutData['is_membership_expired'] ?? false)
-                        <div class="text-right">
-                            <span class="text-xs font-bold text-[#F43F5E] block mb-0.5">Membership Expired (Tarif Reguler)</span>
-                            <span class="text-sm text-[#e2e8f0] tabular-nums">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
+
+                {{-- ── Tarif Info ── --}}
+                @if($checkoutData['metode_tarif'] === 'reguler' || $checkoutData['is_membership_expired'])
+                <div class="py-2.5 border-b border-[#1e293b]">
+                    <div class="flex justify-between items-start">
+                        <span class="text-sm text-[#94a3b8]">Skema Tarif</span>
+                        <div class="text-right space-y-0.5">
+                            <p class="text-xs text-[#94a3b8]">
+                                Jam Pertama: <span class="text-cyan-400 font-semibold">Rp {{ number_format($checkoutData['tarif_jam_pertama'], 0, ',', '.') }}</span>
+                            </p>
+                            <p class="text-xs text-[#94a3b8]">
+                                Jam Berikutnya: <span class="text-cyan-400 font-semibold">Rp {{ number_format($checkoutData['tarif_jam_berikutnya'], 0, ',', '.') }}/jam</span>
+                            </p>
+                            <p class="text-xs text-[#64748b]">
+                                Grace Period: {{ $checkoutData['grace_period'] }} menit &middot; ½ jam s/d: {{ $checkoutData['menit_setengah'] }} menit
+                            </p>
                         </div>
-                    @elseif(isset($checkoutData['metode_tarif']) && $checkoutData['metode_tarif'] !== 'reguler' && $checkoutData['biaya_parkir'] == 0)
+                    </div>
+                </div>
+                @endif
+
+                {{-- ── Biaya Parkir ── --}}
+                <div class="flex justify-between items-start py-2.5 border-b border-[#1e293b]">
+                    <div>
+                        <span class="text-sm text-[#94a3b8]">Biaya Parkir</span>
+                        @if($checkoutData['is_membership_expired'] ?? false)
+                        <p class="text-xs font-bold text-rose-400 mt-0.5">Membership Expired — Tarif Reguler</p>
+                        @endif
+                    </div>
+                    @if(isset($checkoutData['metode_tarif']) && $checkoutData['metode_tarif'] !== 'reguler' && !$checkoutData['is_membership_expired'] && $checkoutData['biaya_parkir'] == 0)
                         <span class="text-sm font-bold text-emerald-400">BEBAS BIAYA (Rp 0)</span>
+                    @elseif($checkoutData['biaya_parkir'] == 0 && $checkoutData['durasi_menit'] <= $checkoutData['grace_period'])
+                        <span class="text-sm font-bold text-emerald-400">GRATIS — Drop-off (Rp 0)</span>
                     @else
-                        <span class="text-sm text-[#e2e8f0] tabular-nums">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
+                        <span class="text-sm text-[#e2e8f0] tabular-nums font-semibold">Rp {{ number_format($checkoutData['biaya_parkir'], 0, ',', '.') }}</span>
                     @endif
                 </div>
 
-                {{-- Denda --}}
+                {{-- ── Rincian Perhitungan ── --}}
+                @if(!empty($checkoutData['rincian_biaya']))
+                <div class="py-2 border-b border-[#1e293b]">
+                    <p class="text-[10px] font-bold text-[#64748b] uppercase tracking-widest mb-1.5">Rincian Perhitungan</p>
+                    @foreach($checkoutData['rincian_biaya'] as $item)
+                    <div class="flex justify-between items-center py-0.5">
+                        <span class="text-xs text-[#64748b]">{{ $item['desc'] }}</span>
+                        <span class="text-xs font-mono text-[#94a3b8]">Rp {{ number_format($item['nominal'], 0, ',', '.') }}</span>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                {{-- ── Label Tarif ── --}}
+                @if($checkoutData['label_tarif'])
+                <div class="flex justify-between items-center py-2 border-b border-[#1e293b]">
+                    <span class="text-[10px] text-[#64748b] uppercase tracking-wider">Skema Aktif</span>
+                    <span class="text-xs font-semibold px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full">
+                        {{ $checkoutData['label_tarif'] }}
+                    </span>
+                </div>
+                @endif
+
+                {{-- ── Denda ── --}}
                 @if($checkoutData['is_immune_denda'] ?? false)
                 <div class="py-2.5 border-b border-[#1e293b]">
                     <div class="flex items-center gap-2 p-2.5 bg-amber-500/10 rounded-xl border border-amber-500/20">
@@ -190,7 +235,7 @@
                 @endif
                 @endif
 
-                {{-- Total --}}
+                {{-- ── Total ── --}}
                 <div class="flex justify-between items-center py-4 px-5 mt-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
                     <span class="font-bold text-emerald-400 text-base">Total Biaya</span>
                     <span class="font-extrabold text-emerald-400 text-xl tabular-nums">

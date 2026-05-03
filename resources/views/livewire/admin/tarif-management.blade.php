@@ -68,7 +68,8 @@
                         <tr>
                             <th>No</th>
                             <th>Jenis Kendaraan</th>
-                            <th>Tarif per Jam</th>
+                            <th>Tarif Jam Pertama</th>
+                            <th>Tarif Jam Berikutnya</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -86,8 +87,12 @@
                                     <span class="font-semibold text-[#e2e8f0]">{{ ucfirst($tarif->jenis_kendaraan) }}</span>
                                 </div>
                             </td>
-                            <td class="font-bold text-cyan-400 tabular-nums">
-                                Rp {{ number_format($tarif->tarif_per_jam, 0, ',', '.') }}
+                            <td class="tabular-nums">
+                                <span class="font-bold text-cyan-400">Rp {{ number_format($tarif->tarif_jam_pertama, 0, ',', '.') }}</span>
+                                <span class="text-xs font-normal text-[#94a3b8]">/jam pertama</span>
+                            </td>
+                            <td class="tabular-nums">
+                                <span class="font-semibold text-indigo-400">Rp {{ number_format($tarif->tarif_jam_berikutnya, 0, ',', '.') }}</span>
                                 <span class="text-xs font-normal text-[#94a3b8]">/jam</span>
                             </td>
                             <td>
@@ -109,7 +114,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="py-16 text-center text-[#94a3b8]">Tidak ada data tarif</td>
+                            <td colspan="5" class="py-16 text-center text-[#94a3b8]">Tidak ada data tarif</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -247,14 +252,35 @@
                                class="input-base @error('jenis_kendaraan') input-error @enderror">
                         @error('jenis_kendaraan') <p class="error-msg">{{ $message }}</p> @enderror
                     </div>
-                    <div>
-                        <label class="input-label">Tarif per Jam (Rp)</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#94a3b8] font-semibold text-sm">Rp</span>
-                            <input wire:model="tarif_per_jam" type="number" step="500" min="0"
-                                   class="input-base pl-10 @error('tarif_per_jam') input-error @enderror">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="input-label">Tarif Jam Pertama (Rp)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#94a3b8] font-semibold text-sm">Rp</span>
+                                <input wire:model="tarif_jam_pertama" type="number" step="500" min="0"
+                                       class="input-base pl-10 @error('tarif_jam_pertama') input-error @enderror">
+                            </div>
+                            @error('tarif_jam_pertama') <p class="error-msg">{{ $message }}</p> @enderror
+                            <p class="text-[10px] text-[#64748b] mt-1">Berlaku untuk menit ke-31 hingga 60.</p>
                         </div>
-                        @error('tarif_per_jam') <p class="error-msg">{{ $message }}</p> @enderror
+                        <div>
+                            <label class="input-label">Tarif Jam Berikutnya (Rp)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#94a3b8] font-semibold text-sm">Rp</span>
+                                <input wire:model="tarif_jam_berikutnya" type="number" step="500" min="0"
+                                       class="input-base pl-10 @error('tarif_jam_berikutnya') input-error @enderror">
+                            </div>
+                            @error('tarif_jam_berikutnya') <p class="error-msg">{{ $message }}</p> @enderror
+                            <p class="text-[10px] text-[#64748b] mt-1">Dikenakan per jam (ceil) setelah jam ke-1.</p>
+                        </div>
+                    </div>
+                    {{-- Tarif Info Box --}}
+                    <div class="p-3 bg-[#020617] border border-[#1e293b] rounded-xl text-xs text-[#64748b] space-y-1">
+                        <p class="font-semibold text-[#94a3b8] mb-1.5">📋 Skema Tarif Progresif:</p>
+                        <p>≤ 10 menit &rarr; <span class="text-emerald-400 font-semibold">Gratis (Grace Period)</span></p>
+                        <p>11 – 30 menit &rarr; <span class="text-cyan-400 font-semibold">50% Tarif Jam Pertama</span></p>
+                        <p>31 – 60 menit &rarr; <span class="text-cyan-400 font-semibold">100% Tarif Jam Pertama</span></p>
+                        <p>&gt; 60 menit &rarr; <span class="text-indigo-400 font-semibold">Jam Pertama + ceil(sisa/60) × Jam Berikutnya</span></p>
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-[#1e293b]">

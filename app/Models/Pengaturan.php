@@ -40,4 +40,20 @@ class Pengaturan extends Model
     {
         return (int) static::getValue('denda_karcis_hilang', '20000');
     }
+
+    /**
+     * Get grace period in minutes (durasi gratis / drop-off).
+     */
+    public static function getGracePeriod(): int
+    {
+        return (int) static::getValue('menit_grace_period', '10');
+    }
+
+    /**
+     * Get half-hour tariff threshold in minutes.
+     */
+    public static function getMenitTarifSetengah(): int
+    {
+        return (int) static::getValue('menit_tarif_setengah', '30');
+    }
 }

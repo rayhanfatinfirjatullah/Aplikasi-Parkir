@@ -83,7 +83,7 @@
                         @if(in_array($transaksi->status_spesial ?? 'reguler', ['vip', 'vvip']))
                         <span class="font-bold text-emerald-600">GRATIS (Rp 0)</span>
                         @else
-                        <span class="font-semibold text-slate-800">Rp {{ number_format($transaksi->tarif->tarif_per_jam, 0, ',', '.') }}</span>
+                        <span class="font-semibold text-slate-800">Rp {{ number_format($transaksi->tarif->tarif_jam_pertama, 0, ',', '.') }}</span>
                         @endif
                     </div>
                     <div class="flex justify-between text-sm">

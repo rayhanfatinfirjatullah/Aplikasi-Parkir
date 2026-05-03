@@ -88,7 +88,17 @@
                     </div>
                     <div class="flex justify-between text-sm">
                         <span class="text-slate-400">Durasi</span>
-                        <span class="font-bold text-amber-600">{{ $transaksi->durasi_jam ?? '-' }} jam</span>
+                        <div class="text-right">
+                            @php
+                                $durasiJam = $transaksi->durasi_jam ?? 0;
+                                $durasiMnt = $transaksi->waktu_keluar && $transaksi->waktu_masuk
+                                    ? (int) floor($transaksi->waktu_masuk->diffInSeconds($transaksi->waktu_keluar) / 60) % 60
+                                    : 0;
+                            @endphp
+                            <span class="font-bold text-amber-600">
+                                {{ $durasiJam > 0 ? $durasiJam . ' Jam ' : '' }}{{ $durasiMnt }} Menit
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -98,19 +108,21 @@
                 <div class="space-y-2">
                     <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Rincian Biaya</p>
                     <div class="flex justify-between text-sm">
-                        <span class="text-slate-400">Tarif / Jam</span>
-                        <span class="font-semibold text-slate-800">Rp {{ number_format($transaksi->tarif->tarif_per_jam, 0, ',', '.') }}</span>
+                        <span class="text-slate-400">Tarif Jam Pertama</span>
+                        <span class="font-semibold text-slate-800">Rp {{ number_format($transaksi->tarif->tarif_jam_pertama, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span class="text-slate-400">Durasi</span>
-                        <span class="font-semibold text-slate-800">{{ $transaksi->durasi_jam ?? 0 }} jam</span>
+                        <span class="text-slate-400">Tarif Jam Berikutnya</span>
+                        <span class="font-semibold text-slate-800">Rp {{ number_format($transaksi->tarif->tarif_jam_berikutnya, 0, ',', '.') }}/jam</span>
                     </div>
                     <div class="flex justify-between text-sm">
                         <span class="text-slate-400">Biaya Parkir</span>
                         @if(in_array($transaksi->status_spesial ?? 'reguler', ['vip', 'vvip']))
                         <span class="font-bold text-emerald-600">GRATIS (Rp 0)</span>
+                        @elseif(($transaksi->biaya_parkir ?? 0) == 0 && $transaksi->status === 'keluar')
+                        <span class="font-bold text-emerald-600">Rp 0 (Grace Period / Bebas Biaya)</span>
                         @else
-                        <span class="font-semibold text-slate-800">Rp {{ number_format(($transaksi->durasi_jam ?? 0) * $transaksi->tarif->tarif_per_jam, 0, ',', '.') }}</span>
+                        <span class="font-semibold text-slate-800">Rp {{ number_format($transaksi->biaya_parkir ?? 0, 0, ',', '.') }}</span>
                         @endif
                     </div>
                     @if($transaksi->denda > 0)

@@ -12,13 +12,15 @@ class Tarif extends Model
 
     protected $fillable = [
         'jenis_kendaraan',
-        'tarif_per_jam',
+        'tarif_jam_pertama',
+        'tarif_jam_berikutnya',
     ];
 
     protected function casts(): array
     {
         return [
-            'tarif_per_jam' => 'decimal:2',
+            'tarif_jam_pertama' => 'decimal:2',
+            'tarif_jam_berikutnya' => 'decimal:2',
         ];
     }
 

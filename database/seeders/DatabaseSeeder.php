@@ -48,18 +48,21 @@ class DatabaseSeeder extends Seeder
 
         // Seed Tarif
         Tarif::create([
-            'jenis_kendaraan' => 'motor',
-            'tarif_per_jam' => 2000,
+            'jenis_kendaraan'      => 'motor',
+            'tarif_jam_pertama'    => 2000,
+            'tarif_jam_berikutnya' => 1000,
         ]);
 
         Tarif::create([
-            'jenis_kendaraan' => 'mobil',
-            'tarif_per_jam' => 5000,
+            'jenis_kendaraan'      => 'mobil',
+            'tarif_jam_pertama'    => 5000,
+            'tarif_jam_berikutnya' => 3000,
         ]);
 
         Tarif::create([
-            'jenis_kendaraan' => 'lainnya',
-            'tarif_per_jam' => 7000,
+            'jenis_kendaraan'      => 'lainnya',
+            'tarif_jam_pertama'    => 7000,
+            'tarif_jam_berikutnya' => 4000,
         ]);
 
         // Seed Area Parkir
@@ -107,6 +110,16 @@ class DatabaseSeeder extends Seeder
         Pengaturan::create([
             'nama_pengaturan' => 'denda_karcis_hilang',
             'nilai_pengaturan' => '20000',
+        ]);
+
+        Pengaturan::create([
+            'nama_pengaturan' => 'menit_grace_period',
+            'nilai_pengaturan' => '10',
+        ]);
+
+        Pengaturan::create([
+            'nama_pengaturan' => 'menit_tarif_setengah',
+            'nilai_pengaturan' => '30',
         ]);
     }
 }

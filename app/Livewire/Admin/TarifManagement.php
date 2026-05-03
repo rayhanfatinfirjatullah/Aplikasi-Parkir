@@ -23,7 +23,8 @@ class TarifManagement extends Component
     public bool $isEdit = false;
     public ?int $editId = null;
     public string $jenis_kendaraan = '';
-    public string $tarif_per_jam = '';
+    public string $tarif_jam_pertama = '';
+    public string $tarif_jam_berikutnya = '';
 
     // -- Status Properties --
     public bool $showStatusModal = false;
@@ -62,40 +63,47 @@ class TarifManagement extends Component
     public function rules()
     {
         return [
-            'jenis_kendaraan' => 'required|string|max:50|unique:tb_tarif,jenis_kendaraan,' . ($this->isEdit ? $this->editId : 'NULL') . ',id_tarif',
-            'tarif_per_jam' => 'required|numeric|min:0',
+            'jenis_kendaraan'      => 'required|string|max:50|unique:tb_tarif,jenis_kendaraan,' . ($this->isEdit ? $this->editId : 'NULL') . ',id_tarif',
+            'tarif_jam_pertama'    => 'required|numeric|min:0',
+            'tarif_jam_berikutnya' => 'required|numeric|min:0',
         ];
     }
 
     protected array $messages = [
-        'jenis_kendaraan.required' => 'Jenis kendaraan wajib diisi',
-        'jenis_kendaraan.unique' => 'Jenis kendaraan ini sudah ada di daftar tarif',
-        'jenis_kendaraan.max' => 'Jenis kendaraan maksimal 50 karakter',
-        'tarif_per_jam.required' => 'Tarif per jam wajib diisi',
-        'tarif_per_jam.numeric' => 'Tarif per jam harus berupa angka',
-        'tarif_per_jam.min' => 'Tarif per jam minimal 0',
+        'jenis_kendaraan.required'       => 'Jenis kendaraan wajib diisi',
+        'jenis_kendaraan.unique'         => 'Jenis kendaraan ini sudah ada di daftar tarif',
+        'jenis_kendaraan.max'            => 'Jenis kendaraan maksimal 50 karakter',
+        'tarif_jam_pertama.required'     => 'Tarif jam pertama wajib diisi',
+        'tarif_jam_pertama.numeric'      => 'Tarif jam pertama harus berupa angka',
+        'tarif_jam_pertama.min'          => 'Tarif jam pertama minimal 0',
+        'tarif_jam_berikutnya.required'  => 'Tarif jam berikutnya wajib diisi',
+        'tarif_jam_berikutnya.numeric'   => 'Tarif jam berikutnya harus berupa angka',
+        'tarif_jam_berikutnya.min'       => 'Tarif jam berikutnya minimal 0',
     ];
 
     public function openCreate()
     {
-        $this->reset(['jenis_kendaraan', 'tarif_per_jam', 'editId', 'isEdit']);
-        $this->jenis_kendaraan = '';
+        $this->reset(['jenis_kendaraan', 'tarif_jam_pertama', 'tarif_jam_berikutnya', 'editId', 'isEdit']);
+        $this->jenis_kendaraan      = '';
+        $this->tarif_jam_pertama    = '';
+        $this->tarif_jam_berikutnya = '';
         $this->showModal = true;
     }
 
     public function openEdit($id)
     {
         $tarif = Tarif::findOrFail($id);
-        $this->editId = $id;
-        $this->isEdit = true;
-        $this->jenis_kendaraan = $tarif->jenis_kendaraan;
-        $this->tarif_per_jam = $tarif->tarif_per_jam;
+        $this->editId               = $id;
+        $this->isEdit               = true;
+        $this->jenis_kendaraan      = $tarif->jenis_kendaraan;
+        $this->tarif_jam_pertama    = $tarif->tarif_jam_pertama;
+        $this->tarif_jam_berikutnya = $tarif->tarif_jam_berikutnya;
         $this->showModal = true;
     }
 
     public function closeModal()
     {
-        $this->reset(['jenis_kendaraan', 'tarif_per_jam', 'editId', 'isEdit']);
+        $this->reset(['jenis_kendaraan', 'tarif_jam_pertama', 'tarif_jam_berikutnya', 'editId', 'isEdit']);
         $this->resetValidation();
         $this->showModal = false;
     }
@@ -105,16 +113,17 @@ class TarifManagement extends Component
         $this->validate();
 
         $data = [
-            'jenis_kendaraan' => strtolower($this->jenis_kendaraan),
-            'tarif_per_jam' => $this->tarif_per_jam,
+            'jenis_kendaraan'      => strtolower($this->jenis_kendaraan),
+            'tarif_jam_pertama'    => $this->tarif_jam_pertama,
+            'tarif_jam_berikutnya' => $this->tarif_jam_berikutnya,
         ];
 
         if ($this->isEdit) {
             Tarif::where('id_tarif', $this->editId)->update($data);
-            $aktivitas = "Mengubah tarif {$this->jenis_kendaraan}";
+            $aktivitas = "Mengubah tarif {$this->jenis_kendaraan} (Jam 1: Rp {$this->tarif_jam_pertama}, Berikutnya: Rp {$this->tarif_jam_berikutnya})";
         } else {
             Tarif::create($data);
-            $aktivitas = "Menambah tarif {$this->jenis_kendaraan}";
+            $aktivitas = "Menambah tarif {$this->jenis_kendaraan} (Jam 1: Rp {$this->tarif_jam_pertama}, Berikutnya: Rp {$this->tarif_jam_berikutnya})";
         }
 
         LogModel::create([

@@ -23,6 +23,7 @@ class Transaksi extends Model
         'waktu_keluar',
         'durasi_jam',
         'biaya_total',
+        'biaya_parkir',
         'denda',
         'status',
     ];
@@ -33,6 +34,7 @@ class Transaksi extends Model
             'waktu_masuk' => 'datetime',
             'waktu_keluar' => 'datetime',
             'biaya_total' => 'decimal:2',
+            'biaya_parkir' => 'decimal:2',
             'denda' => 'decimal:2',
             'durasi_jam' => 'integer',
         ];

@@ -113,7 +113,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-16 text-center text-[#94a3b8]">Tidak ada data kendaraan</td>
+                        <td colspan="7" class="py-16 text-center text-[#94a3b8]">Tidak ada data kendaraan</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -192,7 +192,7 @@
                                             peer-checked:border-cyan-500 peer-checked:bg-cyan-500/10 hover:border-cyan-500/40">
                                     <span class="block text-sm font-bold text-[#e2e8f0]">{{ ucfirst($tarif->jenis_kendaraan) }}</span>
                                     <span class="block text-[10px] text-[#94a3b8] mt-1">
-                                        Rp {{ number_format($tarif->tarif_per_jam, 0, ',', '.') }}/jam
+                                        Rp {{ number_format($tarif->tarif_jam_pertama, 0, ',', '.') }}/jam
                                     </span>
                                 </div>
                             </label>
