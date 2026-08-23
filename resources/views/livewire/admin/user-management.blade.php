@@ -58,14 +58,13 @@ function deleteModalClasses() {
                             </span>
                         </td>
                         <td>
-                            <button wire:click="toggleStatus({{ $user->id_user }})"
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all duration-200
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold
                                     {{ $user->status_aktif
-                                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25'
-                                        : 'bg-rose-500/15 text-rose-400 border border-rose-500/30 hover:bg-rose-500/25' }}">
+                                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                                        : 'bg-rose-500/15 text-rose-400 border border-rose-500/30' }}">
                                 <span class="w-1.5 h-1.5 rounded-full {{ $user->status_aktif ? 'bg-emerald-400' : 'bg-rose-400' }}"></span>
                                 {{ $user->status_aktif ? 'Aktif' : 'Nonaktif' }}
-                            </button>
+                            </span>
                         </td>
                         <td>
                             <div class="flex items-center justify-center gap-1">
@@ -136,20 +135,34 @@ function deleteModalClasses() {
                     </div>
                     <div>
                         <label class="input-label">Role</label>
+                        @if($editingSuperadmin)
+                        <div class="w-full px-4 py-2.5 rounded-xl bg-[#0f172a]/50 border border-[#1e293b] text-[#64748b] flex items-center gap-2 cursor-not-allowed select-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            Super Admin
+                        </div>
+                        @else
                         <select wire:model="role" class="input-base @error('role') input-error @enderror">
                             <option value="admin">Admin</option>
                             <option value="petugas">Petugas</option>
                             <option value="owner">Owner</option>
                         </select>
                         @error('role') <p class="error-msg">{{ $message }}</p> @enderror
+                        @endif
                     </div>
                     <div>
                         <label class="input-label">Status</label>
+                        @if($editingSuperadmin)
+                        <div class="w-full px-4 py-2.5 rounded-xl bg-[#0f172a]/50 border border-[#1e293b] text-[#64748b] flex items-center gap-2 cursor-not-allowed select-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            Selalu Aktif
+                        </div>
+                        @else
                         <select wire:model="status_aktif" class="input-base @error('status_aktif') input-error @enderror">
                             <option value="1">Aktif</option>
                             <option value="0">Nonaktif</option>
                         </select>
                         @error('status_aktif') <p class="error-msg">{{ $message }}</p> @enderror
+                        @endif
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-[#1e293b]">

@@ -15,6 +15,7 @@ class UserManagement extends Component
     public string $search = '';
     public bool $showModal = false;
     public bool $isEdit = false;
+    public bool $editingSuperadmin = false;
     public ?int $editId = null;
 
     public string $nama_lengkap = '';
@@ -56,7 +57,7 @@ class UserManagement extends Component
 
     public function openCreate()
     {
-        $this->reset(['nama_lengkap', 'username', 'password', 'role', 'status_aktif', 'editId', 'isEdit']);
+        $this->reset(['nama_lengkap', 'username', 'password', 'role', 'status_aktif', 'editId', 'isEdit', 'editingSuperadmin']);
         $this->role = 'petugas';
         $this->status_aktif = 1;
         $this->showModal = true;
@@ -65,8 +66,10 @@ class UserManagement extends Component
     public function openEdit($id)
     {
         $user = User::findOrFail($id);
+
         $this->editId = $id;
         $this->isEdit = true;
+        $this->editingSuperadmin = ($user->role === 'superadmin');
         $this->nama_lengkap = $user->nama_lengkap;
         $this->username = $user->username;
         $this->password = '';
@@ -77,7 +80,7 @@ class UserManagement extends Component
 
     public function closeModal()
     {
-        $this->reset(['nama_lengkap', 'username', 'password', 'role', 'status_aktif', 'editId', 'isEdit']);
+        $this->reset(['nama_lengkap', 'username', 'password', 'role', 'status_aktif', 'editId', 'isEdit', 'editingSuperadmin']);
         $this->resetValidation();
         $this->showModal = false;
     }
@@ -89,8 +92,8 @@ class UserManagement extends Component
         $data = [
             'nama_lengkap' => $this->nama_lengkap,
             'username' => $this->username,
-            'role' => $this->role,
-            'status_aktif' => $this->status_aktif,
+            'role' => $this->editingSuperadmin ? 'superadmin' : $this->role,
+            'status_aktif' => $this->editingSuperadmin ? 1 : $this->status_aktif,
         ];
 
         if ($this->password) {
@@ -113,7 +116,7 @@ class UserManagement extends Component
 
         $message = $this->isEdit ? 'User berhasil diperbarui!' : 'User berhasil ditambahkan!';
         $this->showModal = false;
-        $this->reset(['nama_lengkap', 'username', 'password', 'role', 'status_aktif', 'editId', 'isEdit']);
+        $this->reset(['nama_lengkap', 'username', 'password', 'role', 'status_aktif', 'editId', 'isEdit', 'editingSuperadmin']);
         $this->dispatch('toast', type: 'success', message: $message);
     }
 
@@ -138,25 +141,20 @@ class UserManagement extends Component
         $this->dispatch('toast', type: 'success', message: 'User berhasil dihapus!');
     }
 
-    public function toggleStatus($id)
-    {
-        $user = User::findOrFail($id);
-        $user->status_aktif = !$user->status_aktif;
-        $user->save();
-
-        LogModel::create([
-            'id_user' => auth()->user()->id_user,
-            'aktivitas' => "Mengubah status user {$user->username} menjadi " . ($user->status_aktif ? 'aktif' : 'nonaktif'),
-            'waktu_aktivitas' => now(),
-        ]);
-    }
 
     public function render()
     {
-        $users = User::where(function ($q) {
+        $query = User::where(function ($q) {
             $q->where('nama_lengkap', 'like', "%{$this->search}%")
               ->orWhere('username', 'like', "%{$this->search}%");
-        })->orderBy('id_user', 'desc')->paginate(10);
+        });
+
+        // Non-superadmin tidak bisa melihat user superadmin
+        if (auth()->user()->role !== 'superadmin') {
+            $query->where('role', '!=', 'superadmin');
+        }
+
+        $users = $query->orderBy('id_user', 'desc')->paginate(10);
 
         return view('livewire.admin.user-management', compact('users'))
             ->layout('layouts.app');
