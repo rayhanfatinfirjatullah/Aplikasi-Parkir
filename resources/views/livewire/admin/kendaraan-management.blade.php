@@ -80,7 +80,7 @@
                         <td>
                             @if($statusObj && $statusObj->metode_tarif === 'membership')
                                 @if($k->isMembershipActive())
-                                    <span class="badge badge-emerald text-[10px]">{{ \Carbon\Carbon::parse($k->masa_aktif_hingga)->format('d/m/Y') }}</span>
+                                    <span class="badge badge-emerald text-[10px]">{{ $k->masa_aktif_hingga ? \Carbon\Carbon::parse($k->masa_aktif_hingga)->format('d/m/Y') : 'Lifetime' }}</span>
                                 @else
                                     <span class="badge badge-rose text-[10px]">Expired</span>
                                 @endif

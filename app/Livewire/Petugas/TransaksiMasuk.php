@@ -137,6 +137,8 @@ class TransaksiMasuk extends Component
         // Get tarif
         $tarif = Tarif::where('jenis_kendaraan', $this->jenis_kendaraan)->firstOrFail();
 
+        $statusSpesialToSave = $kendaraan ? $kendaraan->status_spesial : $this->status_spesial;
+
         // Create transaksi with denormalized vehicle data
         $transaksi = Transaksi::create([
             'id_kendaraan' => $idKendaraan,
@@ -146,7 +148,7 @@ class TransaksiMasuk extends Component
             'plat_nomor' => strtoupper($this->plat_nomor),
             'warna' => $this->warna,
             'pemilik' => $this->pemilik,
-            'status_spesial' => $this->status_spesial,
+            'status_spesial' => $statusSpesialToSave,
             'waktu_masuk' => now(),
             'status' => 'masuk',
         ]);

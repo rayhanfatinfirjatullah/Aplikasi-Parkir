@@ -36,7 +36,7 @@ class Kendaraan extends Model
 
     public function isMembershipActive(): bool
     {
-        if (!$this->masa_aktif_hingga) return false;
+        if (!$this->masa_aktif_hingga) return true; // Treat as lifetime/always active if not set
         return $this->masa_aktif_hingga->endOfDay()->isFuture() || $this->masa_aktif_hingga->isToday();
     }
 
